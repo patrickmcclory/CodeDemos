@@ -1,13 +1,16 @@
-﻿<Activity mc:Ignorable="sap sap2010 sads" x:Class="RightScale._3Tier.Workflow.Workflow1" local:Workflow1.deploymentDescription="Workflow Created Deployment"
+﻿<Activity mc:Ignorable="sap sap2010 sads" x:Class="RightScale._3Tier.Workflow.Workflow1" this:Workflow1.deploymentDescription="Workflow Created Deployment"
  xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities"
- xmlns:local="clr-namespace:RightScale._3Tier.Workflow"
  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
  xmlns:mca="clr-namespace:Microsoft.CSharp.Activities;assembly=System.Activities"
+ xmlns:rn="clr-namespace:RightScale.netClient;assembly=RightScale.netClient"
+ xmlns:rna="clr-namespace:RightScale.netClient.ActivityLibrary;assembly=RightScale.netClient.ActivityLibrary"
+ xmlns:s="clr-namespace:System;assembly=mscorlib"
  xmlns:sads="http://schemas.microsoft.com/netfx/2010/xaml/activities/debugger"
  xmlns:sap="http://schemas.microsoft.com/netfx/2009/xaml/activities/presentation"
  xmlns:sap2010="http://schemas.microsoft.com/netfx/2010/xaml/activities/presentation"
  xmlns:scg="clr-namespace:System.Collections.Generic;assembly=mscorlib"
  xmlns:sco="clr-namespace:System.Collections.ObjectModel;assembly=mscorlib"
+ xmlns:this="clr-namespace:RightScale._3Tier.Workflow"
  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
   <x:Members>
     <x:Property Name="deploymentName" Type="InArgument(x:String)" />
@@ -22,6 +25,21 @@
     <x:Property Name="rsUsername" Type="InArgument(x:String)" />
     <x:Property Name="rsPassword" Type="InArgument(x:String)" />
     <x:Property Name="rsAccountNo" Type="InArgument(x:String)" />
+    <x:Property Name="serverLoadBalancerID" Type="InArgument(x:String)" />
+    <x:Property Name="serverLoadBalancerCount" Type="InArgument(x:Int32)" />
+    <x:Property Name="serverSQLServerID" Type="InArgument(x:String)" />
+    <x:Property Name="serverSQLServerCount" Type="InArgument(x:Int32)" />
+    <x:Property Name="serverIISServerID" Type="InArgument(x:String)" />
+    <x:Property Name="serverIISServerMinCount" Type="InArgument(x:Int32)" />
+    <x:Property Name="serverIISServerMaxCount" Type="InArgument(x:Int32)" />
+    <x:Property Name="deploymentLevelInputs" Type="InArgument(scg:List(rn:Input))" />
+    <x:Property Name="databaseDNSNames" Type="InArgument(scg:List(scg:KeyValuePair(x:String, x:String)))" />
+    <x:Property Name="serverCloudID" Type="InArgument(x:String)" />
+    <x:Property Name="lbServerIDs" Type="InOutArgument(scg:List(x:String))" />
+    <x:Property Name="iisElasticityParams" Type="InArgument(scg:List(rn:ElasticityParam))" />
+    <x:Property Name="serverArrayID" Type="InOutArgument(x:String)" />
+    <x:Property Name="sqlServerIDs" Type="InOutArgument(scg:List(x:String))" />
+    <x:Property Name="sqlServer1Launched" Type="InOutArgument(x:Boolean)" />
   </x:Members>
   <sap2010:ExpressionActivityEditor.ExpressionActivityEditor>C#</sap2010:ExpressionActivityEditor.ExpressionActivityEditor>
   <sap2010:WorkflowViewState.IdRef>RightScale._3Tier.Workflow.Workflow1_1</sap2010:WorkflowViewState.IdRef>
@@ -41,70 +59,791 @@
       <AssemblyReference>System.Activities</AssemblyReference>
       <AssemblyReference>System.Core</AssemblyReference>
       <AssemblyReference>System.Data</AssemblyReference>
+      <AssemblyReference>System.Net</AssemblyReference>
       <AssemblyReference>System.Runtime.Serialization</AssemblyReference>
       <AssemblyReference>System.ServiceModel</AssemblyReference>
       <AssemblyReference>System.ServiceModel.Activities</AssemblyReference>
       <AssemblyReference>System.Xaml</AssemblyReference>
       <AssemblyReference>System.Xml</AssemblyReference>
       <AssemblyReference>System.Xml.Linq</AssemblyReference>
-      <AssemblyReference>Newtonsoft.Json</AssemblyReference>
-      <AssemblyReference>System.Net</AssemblyReference>
+      <AssemblyReference>RightScale.netClient.ActivityLibrary</AssemblyReference>
       <AssemblyReference>RightScale.netClient</AssemblyReference>
+      <AssemblyReference>Newtonsoft.Json</AssemblyReference>
       <AssemblyReference>mscorlib</AssemblyReference>
       <AssemblyReference>RightScale.3Tier.Workflow</AssemblyReference>
     </sco:Collection>
   </TextExpression.ReferencesForImplementation>
-  <Sequence DisplayName="Prepare New Deployment" sap2010:WorkflowViewState.IdRef="Sequence_1">
-    <local:CreateDeployment DeploymentID="{x:Null}" sap2010:WorkflowViewState.IdRef="CreateDeployment_1">
-      <local:CreateDeployment.DeploymentDescription>
+  <Sequence DisplayName="3 Tier Deployment" sap2010:WorkflowViewState.IdRef="Sequence_2">
+    <rna:CreateDeployment DisplayName="Create Deployment" sap2010:WorkflowViewState.IdRef="CreateDeployment_2">
+      <rna:CreateDeployment.DeploymentDescription>
         <InArgument x:TypeArguments="x:String">
           <mca:CSharpValue x:TypeArguments="x:String">deploymentDescription</mca:CSharpValue>
         </InArgument>
-      </local:CreateDeployment.DeploymentDescription>
-      <local:CreateDeployment.DeploymentName>
+      </rna:CreateDeployment.DeploymentDescription>
+      <rna:CreateDeployment.DeploymentID>
+        <OutArgument x:TypeArguments="x:String">
+          <mca:CSharpReference x:TypeArguments="x:String">deploymentID</mca:CSharpReference>
+        </OutArgument>
+      </rna:CreateDeployment.DeploymentID>
+      <rna:CreateDeployment.DeploymentName>
         <InArgument x:TypeArguments="x:String">
           <mca:CSharpValue x:TypeArguments="x:String">deploymentName</mca:CSharpValue>
         </InArgument>
-      </local:CreateDeployment.DeploymentName>
-      <local:CreateDeployment.DeploymentTagScope>
+      </rna:CreateDeployment.DeploymentName>
+      <rna:CreateDeployment.DeploymentTagScope>
         <InArgument x:TypeArguments="x:String">
           <mca:CSharpValue x:TypeArguments="x:String">deploymentTagScope</mca:CSharpValue>
         </InArgument>
-      </local:CreateDeployment.DeploymentTagScope>
-      <local:CreateDeployment.rsAccountID>
+      </rna:CreateDeployment.DeploymentTagScope>
+      <rna:CreateDeployment.inputs>
+        <InArgument x:TypeArguments="scg:List(rn:Input)">
+          <mca:CSharpValue x:TypeArguments="scg:List(rn:Input)">deploymentLevelInputs</mca:CSharpValue>
+        </InArgument>
+      </rna:CreateDeployment.inputs>
+      <rna:CreateDeployment.rsAccountID>
         <InArgument x:TypeArguments="x:String">
           <mca:CSharpValue x:TypeArguments="x:String">rsAccountNo</mca:CSharpValue>
         </InArgument>
-      </local:CreateDeployment.rsAccountID>
-      <local:CreateDeployment.rsOAuthToken>
+      </rna:CreateDeployment.rsAccountID>
+      <rna:CreateDeployment.rsOAuthToken>
         <InArgument x:TypeArguments="x:String">
           <mca:CSharpValue x:TypeArguments="x:String">rsOauthRefreshToken</mca:CSharpValue>
         </InArgument>
-      </local:CreateDeployment.rsOAuthToken>
-      <local:CreateDeployment.rsPassword>
+      </rna:CreateDeployment.rsOAuthToken>
+      <rna:CreateDeployment.rsPassword>
         <InArgument x:TypeArguments="x:String">
           <mca:CSharpValue x:TypeArguments="x:String">rsPassword</mca:CSharpValue>
         </InArgument>
-      </local:CreateDeployment.rsPassword>
-      <local:CreateDeployment.rsUserName>
+      </rna:CreateDeployment.rsPassword>
+      <rna:CreateDeployment.rsUserName>
         <InArgument x:TypeArguments="x:String">
           <mca:CSharpValue x:TypeArguments="x:String">rsUsername</mca:CSharpValue>
         </InArgument>
-      </local:CreateDeployment.rsUserName>
-    </local:CreateDeployment>
-    <sads:DebugSymbol.Symbol>d3hEOlxkZXZccGF0cmlja21jY2xvcnkuZ2l0aHViLmNvbVxDb2RlRGVtb3NcUmlnaHRTY2FsZS4zVGllci5Xb3JrZmxvd1xSaWdodFNjYWxlLjNUaWVyLldvcmtmbG93XFdpbmRvd3MzVGllcldvcmtmbG93LnhhbWwKAYABAZwBAQI5A2AOAgEBOgVeHgIBAkcLR1sCATlMC0xUAgEwPQs9XgIBJ1YLVlMCAR5RC1FcAgEVWwtbUwIBDEILQlcCAQM=</sads:DebugSymbol.Symbol>
+      </rna:CreateDeployment.rsUserName>
+    </rna:CreateDeployment>
+    <Parallel DisplayName="Parallel create servers" sap2010:WorkflowViewState.IdRef="Parallel_2">
+      <rna:CreateServer description="{x:Null}" imageID="{x:Null}" inputs="{x:Null}" instanceTypeID="{x:Null}" kernelImageID="{x:Null}" multiCloudImageID="{x:Null}" optimized="{x:Null}" ramdiskImageID="{x:Null}" securityGroupIDs="{x:Null}" sshKeyID="{x:Null}" userData="{x:Null}" DisplayName="Create LB Servers" sap2010:WorkflowViewState.IdRef="CreateServer_3" name="HAProxy + Apache Load Balancer">
+        <rna:CreateServer.cloudID>
+          <InArgument x:TypeArguments="x:String">
+            <mca:CSharpValue x:TypeArguments="x:String">serverCloudID</mca:CSharpValue>
+          </InArgument>
+        </rna:CreateServer.cloudID>
+        <rna:CreateServer.deploymentID>
+          <InArgument x:TypeArguments="x:String">
+            <mca:CSharpValue x:TypeArguments="x:String">deploymentID</mca:CSharpValue>
+          </InArgument>
+        </rna:CreateServer.deploymentID>
+        <rna:CreateServer.numberOfServers>
+          <InArgument x:TypeArguments="x:Int32">
+            <mca:CSharpValue x:TypeArguments="x:Int32">serverLoadBalancerCount</mca:CSharpValue>
+          </InArgument>
+        </rna:CreateServer.numberOfServers>
+        <rna:CreateServer.rsAccountID>
+          <InArgument x:TypeArguments="x:String">
+            <mca:CSharpValue x:TypeArguments="x:String">rsAccountNo</mca:CSharpValue>
+          </InArgument>
+        </rna:CreateServer.rsAccountID>
+        <rna:CreateServer.rsOAuthToken>
+          <InArgument x:TypeArguments="x:String">
+            <mca:CSharpValue x:TypeArguments="x:String">rsOauthRefreshToken</mca:CSharpValue>
+          </InArgument>
+        </rna:CreateServer.rsOAuthToken>
+        <rna:CreateServer.rsPassword>
+          <InArgument x:TypeArguments="x:String">
+            <mca:CSharpValue x:TypeArguments="x:String">rsPassword</mca:CSharpValue>
+          </InArgument>
+        </rna:CreateServer.rsPassword>
+        <rna:CreateServer.rsUserName>
+          <InArgument x:TypeArguments="x:String">
+            <mca:CSharpValue x:TypeArguments="x:String">rsUsername</mca:CSharpValue>
+          </InArgument>
+        </rna:CreateServer.rsUserName>
+        <rna:CreateServer.serverIDs>
+          <OutArgument x:TypeArguments="scg:List(x:String)">
+            <mca:CSharpReference x:TypeArguments="scg:List(x:String)">lbServerIDs</mca:CSharpReference>
+          </OutArgument>
+        </rna:CreateServer.serverIDs>
+        <rna:CreateServer.serverTemplateID>
+          <InArgument x:TypeArguments="x:String">
+            <mca:CSharpValue x:TypeArguments="x:String">serverLoadBalancerID</mca:CSharpValue>
+          </InArgument>
+        </rna:CreateServer.serverTemplateID>
+      </rna:CreateServer>
+      <rna:CreateServer description="{x:Null}" imageID="{x:Null}" inputs="{x:Null}" instanceTypeID="{x:Null}" kernelImageID="{x:Null}" multiCloudImageID="{x:Null}" optimized="{x:Null}" ramdiskImageID="{x:Null}" securityGroupIDs="{x:Null}" sshKeyID="{x:Null}" userData="{x:Null}" DisplayName="Create SQL Servers" sap2010:WorkflowViewState.IdRef="CreateServer_4" name="SQL 2012 Server">
+        <rna:CreateServer.cloudID>
+          <InArgument x:TypeArguments="x:String">
+            <mca:CSharpValue x:TypeArguments="x:String">serverCloudID</mca:CSharpValue>
+          </InArgument>
+        </rna:CreateServer.cloudID>
+        <rna:CreateServer.deploymentID>
+          <InArgument x:TypeArguments="x:String">
+            <mca:CSharpValue x:TypeArguments="x:String">deploymentID</mca:CSharpValue>
+          </InArgument>
+        </rna:CreateServer.deploymentID>
+        <rna:CreateServer.numberOfServers>
+          <InArgument x:TypeArguments="x:Int32">
+            <mca:CSharpValue x:TypeArguments="x:Int32">serverSQLServerCount</mca:CSharpValue>
+          </InArgument>
+        </rna:CreateServer.numberOfServers>
+        <rna:CreateServer.rsAccountID>
+          <InArgument x:TypeArguments="x:String">
+            <mca:CSharpValue x:TypeArguments="x:String">rsAccountNo</mca:CSharpValue>
+          </InArgument>
+        </rna:CreateServer.rsAccountID>
+        <rna:CreateServer.rsOAuthToken>
+          <InArgument x:TypeArguments="x:String">
+            <mca:CSharpValue x:TypeArguments="x:String">rsOauthRefreshToken</mca:CSharpValue>
+          </InArgument>
+        </rna:CreateServer.rsOAuthToken>
+        <rna:CreateServer.rsPassword>
+          <InArgument x:TypeArguments="x:String">
+            <mca:CSharpValue x:TypeArguments="x:String">rsPassword</mca:CSharpValue>
+          </InArgument>
+        </rna:CreateServer.rsPassword>
+        <rna:CreateServer.rsUserName>
+          <InArgument x:TypeArguments="x:String">
+            <mca:CSharpValue x:TypeArguments="x:String">rsUsername</mca:CSharpValue>
+          </InArgument>
+        </rna:CreateServer.rsUserName>
+        <rna:CreateServer.serverIDs>
+          <OutArgument x:TypeArguments="scg:List(x:String)">
+            <mca:CSharpReference x:TypeArguments="scg:List(x:String)">sqlServerIDs</mca:CSharpReference>
+          </OutArgument>
+        </rna:CreateServer.serverIDs>
+        <rna:CreateServer.serverTemplateID>
+          <InArgument x:TypeArguments="x:String">
+            <mca:CSharpValue x:TypeArguments="x:String">serverSQLServerID</mca:CSharpValue>
+          </InArgument>
+        </rna:CreateServer.serverTemplateID>
+      </rna:CreateServer>
+      <rna:CreateServerArray dataCenterID="{x:Null}" dataCenterPolicies="{x:Null}" description="{x:Null}" imageID="{x:Null}" inputs="{x:Null}" instanceTypeID="{x:Null}" kernelImageID="{x:Null}" multiCloudImageID="{x:Null}" optimized="{x:Null}" ramdiskImageID="{x:Null}" securityGroupIDs="{x:Null}" sshKeyID="{x:Null}" userData="{x:Null}" DisplayName="Create IIS Server Array" sap2010:WorkflowViewState.IdRef="CreateServerArray_2" arrayType="alert" name="MileageStats IIS App Tier" state="disabled">
+        <rna:CreateServerArray.cloudID>
+          <InArgument x:TypeArguments="x:String">
+            <mca:CSharpValue x:TypeArguments="x:String">serverCloudID</mca:CSharpValue>
+          </InArgument>
+        </rna:CreateServerArray.cloudID>
+        <rna:CreateServerArray.deploymentID>
+          <InArgument x:TypeArguments="x:String">
+            <mca:CSharpValue x:TypeArguments="x:String">deploymentID</mca:CSharpValue>
+          </InArgument>
+        </rna:CreateServerArray.deploymentID>
+        <rna:CreateServerArray.elasticityParams>
+          <InArgument x:TypeArguments="scg:List(rn:ElasticityParam)">
+            <mca:CSharpValue x:TypeArguments="scg:List(rn:ElasticityParam)">iisElasticityParams</mca:CSharpValue>
+          </InArgument>
+        </rna:CreateServerArray.elasticityParams>
+        <rna:CreateServerArray.rsAccountID>
+          <InArgument x:TypeArguments="x:String">
+            <mca:CSharpValue x:TypeArguments="x:String">rsAccountNo</mca:CSharpValue>
+          </InArgument>
+        </rna:CreateServerArray.rsAccountID>
+        <rna:CreateServerArray.rsOAuthToken>
+          <InArgument x:TypeArguments="x:String">
+            <mca:CSharpValue x:TypeArguments="x:String">rsOauthRefreshToken</mca:CSharpValue>
+          </InArgument>
+        </rna:CreateServerArray.rsOAuthToken>
+        <rna:CreateServerArray.rsPassword>
+          <InArgument x:TypeArguments="x:String">
+            <mca:CSharpValue x:TypeArguments="x:String">rsPassword</mca:CSharpValue>
+          </InArgument>
+        </rna:CreateServerArray.rsPassword>
+        <rna:CreateServerArray.rsUserName>
+          <InArgument x:TypeArguments="x:String">
+            <mca:CSharpValue x:TypeArguments="x:String">rsUsername</mca:CSharpValue>
+          </InArgument>
+        </rna:CreateServerArray.rsUserName>
+        <rna:CreateServerArray.serverArrayID>
+          <OutArgument x:TypeArguments="x:String">
+            <mca:CSharpReference x:TypeArguments="x:String">serverArrayID</mca:CSharpReference>
+          </OutArgument>
+        </rna:CreateServerArray.serverArrayID>
+        <rna:CreateServerArray.serverTemplateID>
+          <InArgument x:TypeArguments="x:String">
+            <mca:CSharpValue x:TypeArguments="x:String">serverIISServerID</mca:CSharpValue>
+          </InArgument>
+        </rna:CreateServerArray.serverTemplateID>
+      </rna:CreateServerArray>
+    </Parallel>
+    <Parallel DisplayName="Parallel Launch Phase 1 (LB's and SQL Server 1)" sap2010:WorkflowViewState.IdRef="Parallel_3">
+      <Sequence DisplayName="Build SQL Server 1 (Primary)" sap2010:WorkflowViewState.IdRef="Sequence_3">
+        <Sequence.Variables>
+          <Variable x:TypeArguments="x:String" Name="currentSQLServerState">
+            <Variable.Default>
+              <mca:CSharpValue x:TypeArguments="x:String">"inactive";</mca:CSharpValue>
+            </Variable.Default>
+          </Variable>
+          <Variable x:TypeArguments="x:Boolean" Name="isSQL1Operational">
+            <Variable.Default>
+              <mca:CSharpValue x:TypeArguments="x:Boolean">false;</mca:CSharpValue>
+            </Variable.Default>
+          </Variable>
+          <Variable x:TypeArguments="x:Boolean" Name="SQL1Launched">
+            <Variable.Default>
+              <mca:CSharpValue x:TypeArguments="x:Boolean">false;</mca:CSharpValue>
+            </Variable.Default>
+          </Variable>
+        </Sequence.Variables>
+        <rna:LaunchServer DisplayName="Launch SQL Server 1" sap2010:WorkflowViewState.IdRef="LaunchServer_2">
+          <rna:LaunchServer.rsAccountID>
+            <InArgument x:TypeArguments="x:String">
+              <mca:CSharpValue x:TypeArguments="x:String">rsAccountNo</mca:CSharpValue>
+            </InArgument>
+          </rna:LaunchServer.rsAccountID>
+          <rna:LaunchServer.rsOAuthToken>
+            <InArgument x:TypeArguments="x:String">
+              <mca:CSharpValue x:TypeArguments="x:String">rsOauthRefreshToken</mca:CSharpValue>
+            </InArgument>
+          </rna:LaunchServer.rsOAuthToken>
+          <rna:LaunchServer.rsPassword>
+            <InArgument x:TypeArguments="x:String">
+              <mca:CSharpValue x:TypeArguments="x:String">rsPassword</mca:CSharpValue>
+            </InArgument>
+          </rna:LaunchServer.rsPassword>
+          <rna:LaunchServer.rsUserName>
+            <InArgument x:TypeArguments="x:String">
+              <mca:CSharpValue x:TypeArguments="x:String">rsUsername</mca:CSharpValue>
+            </InArgument>
+          </rna:LaunchServer.rsUserName>
+          <rna:LaunchServer.serverID>
+            <InArgument x:TypeArguments="x:String">
+              <mca:CSharpValue x:TypeArguments="x:String">sqlServerIDs[0]</mca:CSharpValue>
+            </InArgument>
+          </rna:LaunchServer.serverID>
+          <rna:LaunchServer.serverLaunched>
+            <OutArgument x:TypeArguments="x:Boolean">
+              <mca:CSharpReference x:TypeArguments="x:Boolean">SQL1Launched</mca:CSharpReference>
+            </OutArgument>
+          </rna:LaunchServer.serverLaunched>
+        </rna:LaunchServer>
+        <DoWhile DisplayName="Wait for SQL1 to become operational" sap2010:WorkflowViewState.IdRef="DoWhile_1">
+          <DoWhile.Condition>
+            <mca:CSharpValue x:TypeArguments="x:Boolean">!isSQL1Operational &amp;&amp; currentSQLServerState != "stranded";</mca:CSharpValue>
+          </DoWhile.Condition>
+          <rna:GetServerState sap2010:WorkflowViewState.IdRef="GetServerState_1" successSate="operational">
+            <rna:GetServerState.isComplete>
+              <OutArgument x:TypeArguments="x:Boolean">
+                <mca:CSharpReference x:TypeArguments="x:Boolean">isSQL1Operational</mca:CSharpReference>
+              </OutArgument>
+            </rna:GetServerState.isComplete>
+            <rna:GetServerState.rsAccountID>
+              <InArgument x:TypeArguments="x:String">
+                <mca:CSharpValue x:TypeArguments="x:String">rsAccountNo</mca:CSharpValue>
+              </InArgument>
+            </rna:GetServerState.rsAccountID>
+            <rna:GetServerState.rsOAuthToken>
+              <InArgument x:TypeArguments="x:String">
+                <mca:CSharpValue x:TypeArguments="x:String">rsOauthRefreshToken</mca:CSharpValue>
+              </InArgument>
+            </rna:GetServerState.rsOAuthToken>
+            <rna:GetServerState.rsPassword>
+              <InArgument x:TypeArguments="x:String">
+                <mca:CSharpValue x:TypeArguments="x:String">rsPassword</mca:CSharpValue>
+              </InArgument>
+            </rna:GetServerState.rsPassword>
+            <rna:GetServerState.rsUserName>
+              <InArgument x:TypeArguments="x:String">
+                <mca:CSharpValue x:TypeArguments="x:String">rsUsername</mca:CSharpValue>
+              </InArgument>
+            </rna:GetServerState.rsUserName>
+            <rna:GetServerState.serverID>
+              <InArgument x:TypeArguments="x:String">
+                <mca:CSharpValue x:TypeArguments="x:String">sqlServerIDs[0]</mca:CSharpValue>
+              </InArgument>
+            </rna:GetServerState.serverID>
+            <rna:GetServerState.serverState>
+              <OutArgument x:TypeArguments="x:String">
+                <mca:CSharpReference x:TypeArguments="x:String">currentSQLServerState</mca:CSharpReference>
+              </OutArgument>
+            </rna:GetServerState.serverState>
+          </rna:GetServerState>
+        </DoWhile>
+        <If DisplayName="Check to make sure that server has not stranded" sap2010:WorkflowViewState.IdRef="If_1">
+          <If.Condition>
+            <InArgument x:TypeArguments="x:Boolean">
+              <mca:CSharpValue x:TypeArguments="x:Boolean">currentSQLServerState.ToLower().Equals("stranded")</mca:CSharpValue>
+            </InArgument>
+          </If.Condition>
+          <If.Then>
+            <Throw DisplayName="Throw Error" sap2010:WorkflowViewState.IdRef="Throw_1">
+              <InArgument x:TypeArguments="s:Exception">
+                <mca:CSharpValue x:TypeArguments="s:Exception">new RightScale.netClient.RightScaleAPIException("SQL Server 1 ended in a state of 'stranded'");</mca:CSharpValue>
+              </InArgument>
+            </Throw>
+          </If.Then>
+          <If.Else>
+            <Sequence DisplayName="Run operational scripts" sap2010:WorkflowViewState.IdRef="Sequence_8">
+              <rna:RunRightScript inputs="{x:Null}" taskID="{x:Null}" DisplayName="Restore DB" sap2010:WorkflowViewState.IdRef="RunRightScript_1" ignoreLock="True" scriptOrIDString="438636001">
+                <rna:RunRightScript.rsAccountID>
+                  <InArgument x:TypeArguments="x:String">
+                    <mca:CSharpValue x:TypeArguments="x:String">rsAccountNo</mca:CSharpValue>
+                  </InArgument>
+                </rna:RunRightScript.rsAccountID>
+                <rna:RunRightScript.rsOAuthToken>
+                  <InArgument x:TypeArguments="x:String">
+                    <mca:CSharpValue x:TypeArguments="x:String">rsOauthRefreshToken</mca:CSharpValue>
+                  </InArgument>
+                </rna:RunRightScript.rsOAuthToken>
+                <rna:RunRightScript.rsPassword>
+                  <InArgument x:TypeArguments="x:String">
+                    <mca:CSharpValue x:TypeArguments="x:String">rsPassword</mca:CSharpValue>
+                  </InArgument>
+                </rna:RunRightScript.rsPassword>
+                <rna:RunRightScript.rsUserName>
+                  <InArgument x:TypeArguments="x:String">
+                    <mca:CSharpValue x:TypeArguments="x:String">rsUsername</mca:CSharpValue>
+                  </InArgument>
+                </rna:RunRightScript.rsUserName>
+                <rna:RunRightScript.serverID>
+                  <InArgument x:TypeArguments="x:String">
+                    <mca:CSharpValue x:TypeArguments="x:String">sqlServerIDs[0]</mca:CSharpValue>
+                  </InArgument>
+                </rna:RunRightScript.serverID>
+              </rna:RunRightScript>
+              <rna:RunRightScript inputs="{x:Null}" taskID="{x:Null}" DisplayName="Create DB User" sap2010:WorkflowViewState.IdRef="RunRightScript_2" ignoreLock="True" scriptOrIDString="438620001">
+                <rna:RunRightScript.rsAccountID>
+                  <InArgument x:TypeArguments="x:String">
+                    <mca:CSharpValue x:TypeArguments="x:String">rsAccountNo</mca:CSharpValue>
+                  </InArgument>
+                </rna:RunRightScript.rsAccountID>
+                <rna:RunRightScript.rsOAuthToken>
+                  <InArgument x:TypeArguments="x:String">
+                    <mca:CSharpValue x:TypeArguments="x:String">rsOauthRefreshToken</mca:CSharpValue>
+                  </InArgument>
+                </rna:RunRightScript.rsOAuthToken>
+                <rna:RunRightScript.rsPassword>
+                  <InArgument x:TypeArguments="x:String">
+                    <mca:CSharpValue x:TypeArguments="x:String">rsPassword</mca:CSharpValue>
+                  </InArgument>
+                </rna:RunRightScript.rsPassword>
+                <rna:RunRightScript.rsUserName>
+                  <InArgument x:TypeArguments="x:String">
+                    <mca:CSharpValue x:TypeArguments="x:String">rsUsername</mca:CSharpValue>
+                  </InArgument>
+                </rna:RunRightScript.rsUserName>
+                <rna:RunRightScript.serverID>
+                  <InArgument x:TypeArguments="x:String">
+                    <mca:CSharpValue x:TypeArguments="x:String">sqlServerIDs[0]</mca:CSharpValue>
+                  </InArgument>
+                </rna:RunRightScript.serverID>
+              </rna:RunRightScript>
+              <rna:RunRightScript inputs="{x:Null}" taskID="{x:Null}" DisplayName="InitPrimary" sap2010:WorkflowViewState.IdRef="RunRightScript_3" ignoreLock="True" scriptOrIDString="438622001">
+                <rna:RunRightScript.rsAccountID>
+                  <InArgument x:TypeArguments="x:String">
+                    <mca:CSharpValue x:TypeArguments="x:String">rsAccountNo</mca:CSharpValue>
+                  </InArgument>
+                </rna:RunRightScript.rsAccountID>
+                <rna:RunRightScript.rsOAuthToken>
+                  <InArgument x:TypeArguments="x:String">
+                    <mca:CSharpValue x:TypeArguments="x:String">rsOauthRefreshToken</mca:CSharpValue>
+                  </InArgument>
+                </rna:RunRightScript.rsOAuthToken>
+                <rna:RunRightScript.rsPassword>
+                  <InArgument x:TypeArguments="x:String">
+                    <mca:CSharpValue x:TypeArguments="x:String">rsPassword</mca:CSharpValue>
+                  </InArgument>
+                </rna:RunRightScript.rsPassword>
+                <rna:RunRightScript.rsUserName>
+                  <InArgument x:TypeArguments="x:String">
+                    <mca:CSharpValue x:TypeArguments="x:String">rsUsername</mca:CSharpValue>
+                  </InArgument>
+                </rna:RunRightScript.rsUserName>
+                <rna:RunRightScript.serverID>
+                  <InArgument x:TypeArguments="x:String">
+                    <mca:CSharpValue x:TypeArguments="x:String">sqlServerIDs[0]</mca:CSharpValue>
+                  </InArgument>
+                </rna:RunRightScript.serverID>
+              </rna:RunRightScript>
+            </Sequence>
+          </If.Else>
+        </If>
+      </Sequence>
+      <ForEach x:TypeArguments="x:String" DisplayName="Launch Load Balancers" sap2010:WorkflowViewState.IdRef="ForEach`1_2">
+        <ForEach.Values>
+          <InArgument x:TypeArguments="scg:IEnumerable(x:String)">
+            <mca:CSharpValue x:TypeArguments="scg:IEnumerable(x:String)">lbServerIDs</mca:CSharpValue>
+          </InArgument>
+        </ForEach.Values>
+        <ActivityAction x:TypeArguments="x:String">
+          <ActivityAction.Argument>
+            <DelegateInArgument x:TypeArguments="x:String" Name="item" />
+          </ActivityAction.Argument>
+          <Sequence DisplayName="Launch LB Server" sap2010:WorkflowViewState.IdRef="Sequence_4">
+            <Sequence.Variables>
+              <Variable x:TypeArguments="x:Boolean" Name="isLaunchBooting">
+                <Variable.Default>
+                  <mca:CSharpValue x:TypeArguments="x:Boolean">false;</mca:CSharpValue>
+                </Variable.Default>
+              </Variable>
+              <Variable x:TypeArguments="x:String" Name="currentState">
+                <Variable.Default>
+                  <mca:CSharpValue x:TypeArguments="x:String">"unknown";</mca:CSharpValue>
+                </Variable.Default>
+              </Variable>
+            </Sequence.Variables>
+            <rna:LaunchServer serverLaunched="{x:Null}" sap2010:WorkflowViewState.IdRef="LaunchServer_1">
+              <rna:LaunchServer.rsAccountID>
+                <InArgument x:TypeArguments="x:String">
+                  <mca:CSharpValue x:TypeArguments="x:String">rsAccountNo</mca:CSharpValue>
+                </InArgument>
+              </rna:LaunchServer.rsAccountID>
+              <rna:LaunchServer.rsOAuthToken>
+                <InArgument x:TypeArguments="x:String">
+                  <mca:CSharpValue x:TypeArguments="x:String">rsOauthRefreshToken</mca:CSharpValue>
+                </InArgument>
+              </rna:LaunchServer.rsOAuthToken>
+              <rna:LaunchServer.rsPassword>
+                <InArgument x:TypeArguments="x:String">
+                  <mca:CSharpValue x:TypeArguments="x:String">rsPassword</mca:CSharpValue>
+                </InArgument>
+              </rna:LaunchServer.rsPassword>
+              <rna:LaunchServer.rsUserName>
+                <InArgument x:TypeArguments="x:String">
+                  <mca:CSharpValue x:TypeArguments="x:String">rsUsername</mca:CSharpValue>
+                </InArgument>
+              </rna:LaunchServer.rsUserName>
+              <rna:LaunchServer.serverID>
+                <InArgument x:TypeArguments="x:String">
+                  <mca:CSharpValue x:TypeArguments="x:String">item</mca:CSharpValue>
+                </InArgument>
+              </rna:LaunchServer.serverID>
+            </rna:LaunchServer>
+            <DoWhile DisplayName="Wait for LB Server to become operational" sap2010:WorkflowViewState.IdRef="DoWhile_2">
+              <DoWhile.Condition>
+                <mca:CSharpValue x:TypeArguments="x:Boolean">!isLaunchBooting &amp;&amp; currentState.ToLower() != "stranded";</mca:CSharpValue>
+              </DoWhile.Condition>
+              <rna:GetServerState sap2010:WorkflowViewState.IdRef="GetServerState_2">
+                <rna:GetServerState.isComplete>
+                  <OutArgument x:TypeArguments="x:Boolean">
+                    <mca:CSharpReference x:TypeArguments="x:Boolean">isLaunchBooting</mca:CSharpReference>
+                  </OutArgument>
+                </rna:GetServerState.isComplete>
+                <rna:GetServerState.rsAccountID>
+                  <InArgument x:TypeArguments="x:String">
+                    <mca:CSharpValue x:TypeArguments="x:String">rsAccountNo</mca:CSharpValue>
+                  </InArgument>
+                </rna:GetServerState.rsAccountID>
+                <rna:GetServerState.rsOAuthToken>
+                  <InArgument x:TypeArguments="x:String">
+                    <mca:CSharpValue x:TypeArguments="x:String">rsOauthRefreshToken</mca:CSharpValue>
+                  </InArgument>
+                </rna:GetServerState.rsOAuthToken>
+                <rna:GetServerState.rsPassword>
+                  <InArgument x:TypeArguments="x:String">
+                    <mca:CSharpValue x:TypeArguments="x:String">rsPassword</mca:CSharpValue>
+                  </InArgument>
+                </rna:GetServerState.rsPassword>
+                <rna:GetServerState.rsUserName>
+                  <InArgument x:TypeArguments="x:String">
+                    <mca:CSharpValue x:TypeArguments="x:String">rsUsername</mca:CSharpValue>
+                  </InArgument>
+                </rna:GetServerState.rsUserName>
+                <rna:GetServerState.serverID>
+                  <InArgument x:TypeArguments="x:String">
+                    <mca:CSharpValue x:TypeArguments="x:String">item</mca:CSharpValue>
+                  </InArgument>
+                </rna:GetServerState.serverID>
+                <rna:GetServerState.serverState>
+                  <OutArgument x:TypeArguments="x:String">
+                    <mca:CSharpReference x:TypeArguments="x:String">currentState</mca:CSharpReference>
+                  </OutArgument>
+                </rna:GetServerState.serverState>
+                <rna:GetServerState.successSate>
+                  <InArgument x:TypeArguments="x:String">
+                    <mca:CSharpValue x:TypeArguments="x:String">"booting";</mca:CSharpValue>
+                  </InArgument>
+                </rna:GetServerState.successSate>
+              </rna:GetServerState>
+            </DoWhile>
+            <If sap2010:WorkflowViewState.IdRef="If_2">
+              <If.Condition>
+                <InArgument x:TypeArguments="x:Boolean">
+                  <mca:CSharpValue x:TypeArguments="x:Boolean">currentState.ToLower().Equals("stranded")</mca:CSharpValue>
+                </InArgument>
+              </If.Condition>
+              <If.Then>
+                <Throw DisplayName="Throw Error" sap2010:WorkflowViewState.IdRef="Throw_2">
+                  <InArgument x:TypeArguments="s:Exception">
+                    <mca:CSharpValue x:TypeArguments="s:Exception">new RightScale.netClient.RightScaleAPIException("Load Balancer Launch ended in a state of 'stranded'");</mca:CSharpValue>
+                  </InArgument>
+                </Throw>
+              </If.Then>
+            </If>
+          </Sequence>
+        </ActivityAction>
+      </ForEach>
+      <Sequence DisplayName="Launch SQL Server 2" sap2010:WorkflowViewState.IdRef="Sequence_5">
+        <Sequence.Variables>
+          <Variable x:TypeArguments="x:Boolean" Name="sqlServer2Launched">
+            <Variable.Default>
+              <mca:CSharpValue x:TypeArguments="x:Boolean">false;</mca:CSharpValue>
+            </Variable.Default>
+          </Variable>
+          <Variable x:TypeArguments="x:String" Default="unknown" Name="sqlServer2State" />
+          <Variable x:TypeArguments="x:Boolean" Name="isLaunchComplete">
+            <Variable.Default>
+              <mca:CSharpValue x:TypeArguments="x:Boolean">false;</mca:CSharpValue>
+            </Variable.Default>
+          </Variable>
+        </Sequence.Variables>
+        <Delay DisplayName="Wait to launch" sap2010:WorkflowViewState.IdRef="Delay_1">
+          <InArgument x:TypeArguments="x:TimeSpan">
+            <mca:CSharpValue x:TypeArguments="x:TimeSpan">new System.TimeSpan(0, 5, 0);</mca:CSharpValue>
+          </InArgument>
+        </Delay>
+        <rna:LaunchServer DisplayName="Launch SQL Server 2" sap2010:WorkflowViewState.IdRef="LaunchServer_3">
+          <rna:LaunchServer.rsAccountID>
+            <InArgument x:TypeArguments="x:String">
+              <mca:CSharpValue x:TypeArguments="x:String">rsAccountNo</mca:CSharpValue>
+            </InArgument>
+          </rna:LaunchServer.rsAccountID>
+          <rna:LaunchServer.rsOAuthToken>
+            <InArgument x:TypeArguments="x:String">
+              <mca:CSharpValue x:TypeArguments="x:String">rsOauthRefreshToken</mca:CSharpValue>
+            </InArgument>
+          </rna:LaunchServer.rsOAuthToken>
+          <rna:LaunchServer.rsPassword>
+            <InArgument x:TypeArguments="x:String">
+              <mca:CSharpValue x:TypeArguments="x:String">rsPassword</mca:CSharpValue>
+            </InArgument>
+          </rna:LaunchServer.rsPassword>
+          <rna:LaunchServer.rsUserName>
+            <InArgument x:TypeArguments="x:String">
+              <mca:CSharpValue x:TypeArguments="x:String">rsUsername</mca:CSharpValue>
+            </InArgument>
+          </rna:LaunchServer.rsUserName>
+          <rna:LaunchServer.serverID>
+            <InArgument x:TypeArguments="x:String">
+              <mca:CSharpValue x:TypeArguments="x:String">sqlServerIDs[1]</mca:CSharpValue>
+            </InArgument>
+          </rna:LaunchServer.serverID>
+          <rna:LaunchServer.serverLaunched>
+            <OutArgument x:TypeArguments="x:Boolean">
+              <mca:CSharpReference x:TypeArguments="x:Boolean">sqlServer2Launched</mca:CSharpReference>
+            </OutArgument>
+          </rna:LaunchServer.serverLaunched>
+        </rna:LaunchServer>
+        <DoWhile DisplayName="Wait for SQL2 to become operational" sap2010:WorkflowViewState.IdRef="DoWhile_3">
+          <DoWhile.Condition>
+            <mca:CSharpValue x:TypeArguments="x:Boolean">!isLaunchComplete &amp;&amp; sqlServer2State.ToLower() != "stranded";</mca:CSharpValue>
+          </DoWhile.Condition>
+          <rna:GetServerState sap2010:WorkflowViewState.IdRef="GetServerState_3">
+            <rna:GetServerState.isComplete>
+              <OutArgument x:TypeArguments="x:Boolean">
+                <mca:CSharpReference x:TypeArguments="x:Boolean">isLaunchComplete</mca:CSharpReference>
+              </OutArgument>
+            </rna:GetServerState.isComplete>
+            <rna:GetServerState.rsAccountID>
+              <InArgument x:TypeArguments="x:String">
+                <mca:CSharpValue x:TypeArguments="x:String">rsAccountNo</mca:CSharpValue>
+              </InArgument>
+            </rna:GetServerState.rsAccountID>
+            <rna:GetServerState.rsOAuthToken>
+              <InArgument x:TypeArguments="x:String">
+                <mca:CSharpValue x:TypeArguments="x:String">rsOauthRefreshToken</mca:CSharpValue>
+              </InArgument>
+            </rna:GetServerState.rsOAuthToken>
+            <rna:GetServerState.rsPassword>
+              <InArgument x:TypeArguments="x:String">
+                <mca:CSharpValue x:TypeArguments="x:String">rsPassword</mca:CSharpValue>
+              </InArgument>
+            </rna:GetServerState.rsPassword>
+            <rna:GetServerState.rsUserName>
+              <InArgument x:TypeArguments="x:String">
+                <mca:CSharpValue x:TypeArguments="x:String">rsUsername</mca:CSharpValue>
+              </InArgument>
+            </rna:GetServerState.rsUserName>
+            <rna:GetServerState.serverID>
+              <InArgument x:TypeArguments="x:String">
+                <mca:CSharpValue x:TypeArguments="x:String">sqlServerIDs[1]</mca:CSharpValue>
+              </InArgument>
+            </rna:GetServerState.serverID>
+            <rna:GetServerState.serverState>
+              <OutArgument x:TypeArguments="x:String">
+                <mca:CSharpReference x:TypeArguments="x:String">sqlServer2State</mca:CSharpReference>
+              </OutArgument>
+            </rna:GetServerState.serverState>
+            <rna:GetServerState.successSate>
+              <InArgument x:TypeArguments="x:String">
+                <mca:CSharpValue x:TypeArguments="x:String">"operational";</mca:CSharpValue>
+              </InArgument>
+            </rna:GetServerState.successSate>
+          </rna:GetServerState>
+        </DoWhile>
+        <If sap2010:WorkflowViewState.IdRef="If_3">
+          <If.Condition>
+            <InArgument x:TypeArguments="x:Boolean">
+              <mca:CSharpValue x:TypeArguments="x:Boolean">sqlServer2State.ToLower().Equals("stranded")</mca:CSharpValue>
+            </InArgument>
+          </If.Condition>
+          <If.Then>
+            <Throw DisplayName="Throw Error" sap2010:WorkflowViewState.IdRef="Throw_3">
+              <InArgument x:TypeArguments="s:Exception">
+                <mca:CSharpValue x:TypeArguments="s:Exception">new RightScale.netClient.RightScaleAPIException("SQL Server 2 ended in a state of 'stranded'");</mca:CSharpValue>
+              </InArgument>
+            </Throw>
+          </If.Then>
+        </If>
+      </Sequence>
+    </Parallel>
+    <Parallel DisplayName="Parallel Launch Phase 2 (Server Array and SQL Server 2 init mirroring)" sap2010:WorkflowViewState.IdRef="Parallel_4">
+      <Sequence DisplayName="Launch IIS Array" sap2010:WorkflowViewState.IdRef="Sequence_6">
+        <rna:UpdateServerArray arrayType="{x:Null}" cloudID="{x:Null}" dataCenterID="{x:Null}" dataCenterPolicies="{x:Null}" deploymentID="{x:Null}" description="{x:Null}" elasticityParams="{x:Null}" imageID="{x:Null}" inputs="{x:Null}" instanceTypeID="{x:Null}" isUpdated="{x:Null}" kernelImageID="{x:Null}" multiCloudImageID="{x:Null}" name="{x:Null}" optimized="{x:Null}" ramdiskImageID="{x:Null}" securityGroupIDs="{x:Null}" serverTemplateID="{x:Null}" sshKeyID="{x:Null}" userData="{x:Null}" DisplayName="Enable Server Array" sap2010:WorkflowViewState.IdRef="UpdateServerArray_1" state="enabled">
+          <rna:UpdateServerArray.rsAccountID>
+            <InArgument x:TypeArguments="x:String">
+              <mca:CSharpValue x:TypeArguments="x:String">rsAccountNo</mca:CSharpValue>
+            </InArgument>
+          </rna:UpdateServerArray.rsAccountID>
+          <rna:UpdateServerArray.rsOAuthToken>
+            <InArgument x:TypeArguments="x:String">
+              <mca:CSharpValue x:TypeArguments="x:String">rsOauthRefreshToken</mca:CSharpValue>
+            </InArgument>
+          </rna:UpdateServerArray.rsOAuthToken>
+          <rna:UpdateServerArray.rsPassword>
+            <InArgument x:TypeArguments="x:String">
+              <mca:CSharpValue x:TypeArguments="x:String">rsPassword</mca:CSharpValue>
+            </InArgument>
+          </rna:UpdateServerArray.rsPassword>
+          <rna:UpdateServerArray.rsUserName>
+            <InArgument x:TypeArguments="x:String">
+              <mca:CSharpValue x:TypeArguments="x:String">rsUsername</mca:CSharpValue>
+            </InArgument>
+          </rna:UpdateServerArray.rsUserName>
+          <rna:UpdateServerArray.serverArrayID>
+            <InArgument x:TypeArguments="x:String">
+              <mca:CSharpValue x:TypeArguments="x:String">serverArrayID</mca:CSharpValue>
+            </InArgument>
+          </rna:UpdateServerArray.serverArrayID>
+        </rna:UpdateServerArray>
+      </Sequence>
+      <Sequence DisplayName="Init mirroring on Secondary" sap2010:WorkflowViewState.IdRef="Sequence_7">
+        <Sequence.Variables>
+          <Variable x:TypeArguments="x:String" Name="initMirroringTaskID" />
+        </Sequence.Variables>
+        <rna:RunRightScript inputs="{x:Null}" DisplayName="Run Init Mirror on Secondary" sap2010:WorkflowViewState.IdRef="RunRightScript_4" ignoreLock="True" scriptOrIDString="438624001">
+          <rna:RunRightScript.rsAccountID>
+            <InArgument x:TypeArguments="x:String">
+              <mca:CSharpValue x:TypeArguments="x:String">rsAccountNo</mca:CSharpValue>
+            </InArgument>
+          </rna:RunRightScript.rsAccountID>
+          <rna:RunRightScript.rsOAuthToken>
+            <InArgument x:TypeArguments="x:String">
+              <mca:CSharpValue x:TypeArguments="x:String">rsOauthRefreshToken</mca:CSharpValue>
+            </InArgument>
+          </rna:RunRightScript.rsOAuthToken>
+          <rna:RunRightScript.rsPassword>
+            <InArgument x:TypeArguments="x:String">
+              <mca:CSharpValue x:TypeArguments="x:String">rsPassword</mca:CSharpValue>
+            </InArgument>
+          </rna:RunRightScript.rsPassword>
+          <rna:RunRightScript.rsUserName>
+            <InArgument x:TypeArguments="x:String">
+              <mca:CSharpValue x:TypeArguments="x:String">rsUsername</mca:CSharpValue>
+            </InArgument>
+          </rna:RunRightScript.rsUserName>
+          <rna:RunRightScript.serverID>
+            <InArgument x:TypeArguments="x:String">
+              <mca:CSharpValue x:TypeArguments="x:String">sqlServerIDs[1]</mca:CSharpValue>
+            </InArgument>
+          </rna:RunRightScript.serverID>
+          <rna:RunRightScript.taskID>
+            <OutArgument x:TypeArguments="x:String">
+              <mca:CSharpReference x:TypeArguments="x:String">initMirroringTaskID</mca:CSharpReference>
+            </OutArgument>
+          </rna:RunRightScript.taskID>
+        </rna:RunRightScript>
+      </Sequence>
+    </Parallel>
+    <Sequence DisplayName="Run Operational Validation" sap2010:WorkflowViewState.IdRef="Sequence_9" />
+    <sads:DebugSymbol.Symbol>d3hEOlxkZXZccGF0cmlja21jY2xvcnkuZ2l0aHViLmNvbVxDb2RlRGVtb3NcUmlnaHRTY2FsZS4zVGllci5Xb3JrZmxvd1xSaWdodFNjYWxlLjNUaWVyLldvcmtmbG93XFdpbmRvd3MzVGllcldvcmtmbG93LnhhbWyuAQF/AZsBAQJMA/YFDgIBAU0FexwDAfsWfAWKAhADAeoRiwIFrwUQAwGZArAFBfMFEAIBA/QFBfQFZwIBAl8LX1sDAbwYaQtpVAMBpBhVC1VdAwGMGFALUF4DAfQXcwtzUwMB3BduC25cAwHEF3gLeFMDAawXWgtaVwMBlBdkC2RoAwH8Fn0HqwEaAwGhFawBB9oBGgMBxxPbAQeJAh8DAesRjAIHywMSAwHDCswDB70EEQMBvga+BAeuBRIDAZoCsQUHzQUSAwGeAc4FB/IFEgIBBIUBDYUBVwMB4xaPAQ2PAVYDAcsWigENigFhAwGzFoABDYABWAMBmxaZAQ2ZAVUDAYMWlAENlAFeAwHrFZ4BDZ4BVQMB0xWoAQ2oAV8DAbsVowENowFoAwGjFX3uAn2OAwMBohW0AQ20AVcDAYkVvgENvgFWAwHxFLkBDbkBXgMB2RSvAQ2vAVgDAcEUyAENyAFVAwGpFMMBDcMBXgMBkRTNAQ3NAVUDAfkT1wEN1wFcAwHhE9IBDdIBaQMByROsAe8CrAGAAwMByBPjAQ3jAVcDAa8T7QEN7QFWAwGXE9sBuQPbAcADAwGWE94BDd4BWAMB/hL3AQ33AVUDAeYS8gEN8gFeAwHOEoECDYECYAMBthL8AQ38AVUDAZ4ShgINhgJcAwGGEugBDegBcgMB7hHbAegD2wHyAwMB7RHbAcYD2wHhAwMB7BGQAg+QAlgDAfoKlQIPlQJUAwHfCpoCD5oCVAMBxAqeAgm9AhwDAccQvgIJ5wITAwHsDugCCcoDDgMBlQvPAw3PA2cDAasK1gMLuwQWAwG/BsIED8IEVAMBtwLFBDjFBEEDAbYCyAQPyARUAwGbAswECdAEEQMBogbRBAnwBBwDAf8E8QQJnwUTAwGKA6AFCa0FDgMB0gKyBQnMBSEDAZ8B0gUJ8QUeAgEFoQIPoQJYAwHPEbUCD7UCXAMBtBGrAg+rAlcDAZkRpgIPpgJgAwH+ELoCD7oCYgMB4xCwAg+wAlcDAcgQwAINwAKOAQMBrBDCAgvmAiADAe0O6wIP6wKAAQMBlgvvAg3zAhUDAdAO9gINyAMYAwGxC9oDE9oDWAMB2wbfAxPfA1sDAcAG4wMN/QMgAwGjCf4DDawEFwMBrgetBA26BBIDAfYGzgQNzgRqAwGjBtQED9QEWAMBhwboBA/oBFwDAewF3gQP3gRXAwHRBdkED9kEYAMBtgXtBA/tBGgDAZsF4wQP4wRXAwGABfMEDfMEkQEDAeQE9QQLngUgAwGLA6MFD6MFegMB0wKnBQ2rBRUDAe4CtQUPtQVYAwGBAr8FD78FVwMB6QG6BQ+6BWADAdEByQUPyQVaAwG5AcQFD8QFVwMBoQGyBdAEsgXZBAMBoAHVBQ/VBVgDAYUB0gWwAdIFuwEDAYQB6QUP6QVcAgFr3wUP3wVXAgFS2gUP2gVgAgE55AUP5AVXAgEg0gWYAdIFngECAR/uBQ/uBWgCAQbKAhHKAloDAZEQ3gIR3gJeAwH2D8ICXsICawMB9Q/FAhHFAmkDAdoP4wIR4wJsAwG/D9QCEdQCWQMBpA/PAhHPAmIDAYkP2QIR2QJZAwHuDvECEfECsQEDAdEO9wIPkQMkAwHGDZIDD6wDJAMBvAytAw/HAyQDAbIL5gMT5gNcAwGQCvoDE/oDVQMB9QnwAxPwA1sDAdoJ6wMT6wNkAwG/CfUDE/UDWwMBpAmABBGABJEBAwGICYIED6sEJAMBrwewBBOwBHsDAfcGtAQRuAQZAwGSB/0EEf0EWgMByQSRBRGRBV4DAa4EmwURmwVdAwGTBPgEEfgEaAMB+AOWBRGWBWYDAd0DhwURhwVZAwHCA4IFEYIFYgMBpwOMBRGMBVkDAYwDqQURqQWxAQMB7wL6AhX6Al4DAbUO9wK2AfcCwQEDAbQOjgMVjgNiAwGZDoQDFYQDXQMB/g3/AhX/AmYDAeMNiQMViQNdAwHIDfcCngH3AqQBAwHHDZUDFZUDXgMBqw2SA7oBkgPFAQMBqg2pAxWpA2IDAY8NnwMVnwNdAwH0DJoDFZoDZgMB2QykAxWkA10DAb4MkgOiAZIDqAEDAb0MsAMVsANeAwGhDK0DtwGtA8IBAwGgDMQDFcQDYgMBhQy6AxW6A10DAeoLtQMVtQNmAwHPC78DFb8DXQMBtAutA58BrQOlAQMBswuKBBWKBF4DAe0IngQVngRXAwHSCKgEFagEXQMBtwiFBBWFBGsDAZwIowQVowRnAwGBCJQEFZQEXQMB5gePBBWPBGYDAcsHmQQVmQRdAwGwB7YEFbYEvQEDAZMH</sads:DebugSymbol.Symbol>
   </Sequence>
   <sap2010:WorkflowViewState.ViewStateManager>
     <sap2010:ViewStateManager>
-      <sap2010:ViewStateData Id="CreateDeployment_1" sap:VirtualizedContainerService.HintSize="200,22" />
-      <sap2010:ViewStateData Id="Sequence_1" sap:VirtualizedContainerService.HintSize="222,146">
+      <sap2010:ViewStateData Id="CreateDeployment_2" sap:VirtualizedContainerService.HintSize="1682,22" />
+      <sap2010:ViewStateData Id="CreateServer_3" sap:VirtualizedContainerService.HintSize="200,40" />
+      <sap2010:ViewStateData Id="CreateServer_4" sap:VirtualizedContainerService.HintSize="200,40" />
+      <sap2010:ViewStateData Id="CreateServerArray_2" sap:VirtualizedContainerService.HintSize="200,40" />
+      <sap2010:ViewStateData Id="Parallel_2" sap:VirtualizedContainerService.HintSize="1682,86" />
+      <sap2010:ViewStateData Id="LaunchServer_2" sap:VirtualizedContainerService.HintSize="464,22" />
+      <sap2010:ViewStateData Id="GetServerState_1" sap:VirtualizedContainerService.HintSize="200,22" />
+      <sap2010:ViewStateData Id="DoWhile_1" sap:VirtualizedContainerService.HintSize="464,224" />
+      <sap2010:ViewStateData Id="Throw_1" sap:VirtualizedContainerService.HintSize="200,22" />
+      <sap2010:ViewStateData Id="RunRightScript_1" sap:VirtualizedContainerService.HintSize="200,22" />
+      <sap2010:ViewStateData Id="RunRightScript_2" sap:VirtualizedContainerService.HintSize="200,22" />
+      <sap2010:ViewStateData Id="RunRightScript_3" sap:VirtualizedContainerService.HintSize="200,22" />
+      <sap2010:ViewStateData Id="Sequence_8" sap:VirtualizedContainerService.HintSize="222,270">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="RightScale._3Tier.Workflow.Workflow1_1" sap:VirtualizedContainerService.HintSize="262,255" />
+      <sap2010:ViewStateData Id="If_1" sap:VirtualizedContainerService.HintSize="464,420" />
+      <sap2010:ViewStateData Id="Sequence_3" sap:VirtualizedContainerService.HintSize="486,870">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="LaunchServer_1" sap:VirtualizedContainerService.HintSize="464,22" />
+      <sap2010:ViewStateData Id="GetServerState_2" sap:VirtualizedContainerService.HintSize="200,22" />
+      <sap2010:ViewStateData Id="DoWhile_2" sap:VirtualizedContainerService.HintSize="464,224" />
+      <sap2010:ViewStateData Id="Throw_2" sap:VirtualizedContainerService.HintSize="200,22" />
+      <sap2010:ViewStateData Id="If_2" sap:VirtualizedContainerService.HintSize="464,210" />
+      <sap2010:ViewStateData Id="Sequence_4" sap:VirtualizedContainerService.HintSize="486,660">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="ForEach`1_2" sap:VirtualizedContainerService.HintSize="516,870" />
+      <sap2010:ViewStateData Id="Delay_1" sap:VirtualizedContainerService.HintSize="464,22" />
+      <sap2010:ViewStateData Id="LaunchServer_3" sap:VirtualizedContainerService.HintSize="464,22" />
+      <sap2010:ViewStateData Id="GetServerState_3" sap:VirtualizedContainerService.HintSize="200,22" />
+      <sap2010:ViewStateData Id="DoWhile_3" sap:VirtualizedContainerService.HintSize="464,224" />
+      <sap2010:ViewStateData Id="Throw_3" sap:VirtualizedContainerService.HintSize="200,22" />
+      <sap2010:ViewStateData Id="If_3" sap:VirtualizedContainerService.HintSize="464,210" />
+      <sap2010:ViewStateData Id="Sequence_5" sap:VirtualizedContainerService.HintSize="486,870">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="Parallel_3" sap:VirtualizedContainerService.HintSize="1682,916" />
+      <sap2010:ViewStateData Id="UpdateServerArray_1" sap:VirtualizedContainerService.HintSize="200,22" />
+      <sap2010:ViewStateData Id="Sequence_6" sap:VirtualizedContainerService.HintSize="222,146">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="RunRightScript_4" sap:VirtualizedContainerService.HintSize="200,22" />
+      <sap2010:ViewStateData Id="Sequence_7" sap:VirtualizedContainerService.HintSize="222,146">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="Parallel_4" sap:VirtualizedContainerService.HintSize="1682,192" />
+      <sap2010:ViewStateData Id="Sequence_9" sap:VirtualizedContainerService.HintSize="1682,99">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="Sequence_2" sap:VirtualizedContainerService.HintSize="1704,1599">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="RightScale._3Tier.Workflow.Workflow1_1" sap:VirtualizedContainerService.HintSize="1744,1679" />
     </sap2010:ViewStateManager>
   </sap2010:WorkflowViewState.ViewStateManager>
 </Activity>
