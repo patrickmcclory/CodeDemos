@@ -82,7 +82,18 @@ namespace RightScale._3Tier.Workflow
             deploymentLevelInputs.AddRange(getIISInputs());
 
             inputs.Add("deploymentLevelInputs", deploymentLevelInputs);
-            inputs.Add("databaseDNSNames", databaseDNSNames());
+
+
+            List<Input> sql1Inputs = new List<Input>();
+            sql1Inputs.Add(new Input("DNS_DOMAIN_NAME", "text:winworkflowdb1.cloudlord.com"));
+            sql1Inputs.Add(new Input("DNS_ID", "text:10244681"));
+
+            List<Input> sql2Inputs = new List<Input>();
+            sql2Inputs.Add(new Input("DNS_DOMAIN_NAME", "text:winworkflowdb2.cloudlord.com"));
+            sql2Inputs.Add(new Input("DNS_ID", "text:10244682"));
+
+            inputs.Add("sql1Inputs", sql1Inputs);
+            inputs.Add("sql2Inputs", sql2Inputs);
 
             inputs.Add("deploymentName", "Demo Deployment");
             inputs.Add("deploymentDescription", "Created via Windows Workflow Foundation and RightScale.netClient at " + DateTime.Now.ToString());
@@ -115,6 +126,8 @@ namespace RightScale._3Tier.Workflow
             inputs.Add("iisElasticityParams", new List<ElasticityParam>() { ep });
 
             inputs.Add("serverCloudID", cloudID);
+
+            //string manifest = Newtonsoft.Json.JsonConvert.SerializeObject(inputs);
 
             Activity workflow1 = new Workflow1();
 
@@ -282,10 +295,10 @@ namespace RightScale._3Tier.Workflow
         }
 
         private static string lbPools = "mileagestats";
-        private static string lbHealthCheckURI = "/";
+        private static string lbHealthCheckURI = @"/";
         private static string lbStatsPassword = "P@ssword1";
         private static string lbStatsUser = "statsUser";
-        private static string lbStatsUri = "/haproxy-mileagestats";
+        private static string lbStatsUri = @"/haproxy-mileagestats";
         private static string rightscaleTimezone = "UTC";
 
         static void buildLBInputs()
@@ -336,11 +349,11 @@ namespace RightScale._3Tier.Workflow
         static List<Input> getLBInputs()
         {
             List<Input> retVal = new List<Input>();
-            retVal.Add(new Input(@"lb\pools", formatInput(lbPools)));
-            retVal.Add(new Input(@"lb\health_check_uri", formatInput(lbHealthCheckURI)));
-            retVal.Add(new Input(@"lb\stats_password", formatInput(lbStatsPassword)));
-            retVal.Add(new Input(@"lb\stats_user", formatInput(lbStatsUser)));
-            retVal.Add(new Input(@"lb\stats_uri", formatInput(lbStatsUri)));
+            retVal.Add(new Input(@"lb/pools", formatInput(lbPools)));
+            retVal.Add(new Input(@"lb/health_check_uri", formatInput(lbHealthCheckURI)));
+            retVal.Add(new Input(@"lb/stats_password", formatInput(lbStatsPassword)));
+            retVal.Add(new Input(@"lb/stats_user", formatInput(lbStatsUser)));
+            retVal.Add(new Input(@"lb/stats_uri", formatInput(lbStatsUri)));
             return retVal;
         }
 
@@ -352,7 +365,7 @@ namespace RightScale._3Tier.Workflow
         private static string sqlDNSPassword = "cred:DME_USER_PASSWORD";
         private static string sqlDNSService = "DNS Made Easy";
         private static string sqlRemoteStorageAccountID = "cred:azureStorage_devTest_AccountName";
-        private static string sqlRemoteStorageAccountProvider = "Windows Azure Storage";
+        private static string sqlRemoteStorageAccountProvider = "Windows_Azure_Storage";
         private static string sqlRemoteStorageAccountSecret = "cred:azureStorage_devTest_AccountKey";
         private static string sqlRemoteStorageContainer = "media";
         private static string sqlBackupFileName = "mileagestatsdata_sql2012.bak";
@@ -520,7 +533,7 @@ namespace RightScale._3Tier.Workflow
         private static string iisZipFileName = "Build_20130318050444.zip";
         private static string iisRemoteStorageAccountIDApp = "cred:azureStorage_devTest_AccountName";
         private static string iisRemoteStorageAccountSecretApp = "cred:azureStorage_devTest_AccountKey";
-        private static string iisRemoteStorageAccountProviderApp = "Windows Azure Storage";
+        private static string iisRemoteStorageAccountProviderApp = "Windows_Azure_Storage";
         private static string iisRemoteStorageContainerApp = "media";
 
         static void buildIISInputs()
@@ -588,14 +601,6 @@ namespace RightScale._3Tier.Workflow
             retVal.Add(new Input("ZIP_FILE_NAME", formatInput(iisZipFileName)));
             retVal.Add(new Input("LB_VHOST_NAME", formatInput(iisLBVHostName)));
 
-            return retVal;
-        }
-
-        static List<KeyValuePair<string, string>> databaseDNSNames()
-        {
-            List<KeyValuePair<string, string>> retVal = new List<KeyValuePair<string, string>>();
-            retVal.Add(new KeyValuePair<string, string>("winworkflowdb1.cloudlord.com", "10244681"));
-            retVal.Add(new KeyValuePair<string, string>("winworkflowdb2.cloudlord.com", "10244682"));
             return retVal;
         }
 

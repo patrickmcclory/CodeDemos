@@ -9,20 +9,8 @@ using RightScale.netClient;
 
 namespace RightScale.netClient.ActivityLibrary.Base
 {
-    public abstract class ServerBasedCreateActivity:RSCodeActivity
+    public abstract class ServerBasedActivity : Base.RSCodeActivity
     {
-        [RequiredArgument]
-        public InArgument<string> cloudID { get; set; }
-
-        [RequiredArgument]
-        public InArgument<string> deploymentID { get; set; }
-
-        [RequiredArgument]
-        public InArgument<string> serverTemplateID { get; set; }
-
-        [RequiredArgument]
-        public InArgument<string> name { get; set; }
-
         public InArgument<List<Input>> inputs { get; set; }
 
         public InArgument<string> instanceTypeID { get; set; }

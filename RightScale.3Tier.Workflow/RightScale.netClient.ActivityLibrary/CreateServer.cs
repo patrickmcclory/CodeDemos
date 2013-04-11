@@ -33,18 +33,33 @@ namespace RightScale.netClient.ActivityLibrary
                 {
                     for (int i = 0; i < this.numberOfServers.Get(context); i++)
                     {
+                        string desc = this.description.Get(context);
+                        if (string.IsNullOrWhiteSpace(desc))
+                        {
+                            desc = getDefaultDescription();
+                        }
                         string srvName = this.name.Get(context) + " [" + (i + 1).ToString() + " of " + this.numberOfServers.Get(context) + "]";
-                        string srvID = Server.create(this.cloudID.Get(context), this.deploymentID.Get(context), this.serverTemplateID.Get(context), srvName, this.description.Get(context), this.cloudID.Get(context), this.description.Get(context), this.imageID.Get(context), this.inputs.Get(context), this.instanceTypeID.Get(context), this.kernelImageID.Get(context), this.multiCloudImageID.Get(context), this.ramdiskImageID.Get(context), this.securityGroupIDs.Get(context), this.sshKeyID.Get(context), this.userData.Get(context), this.optimized.Get(context));
+                        string srvID = Server.create(this.cloudID.Get(context), this.deploymentID.Get(context), this.serverTemplateID.Get(context), srvName, desc, this.cloudID.Get(context), this.description.Get(context), this.imageID.Get(context), this.inputs.Get(context), this.instanceTypeID.Get(context), this.kernelImageID.Get(context), this.multiCloudImageID.Get(context), this.ramdiskImageID.Get(context), this.securityGroupIDs.Get(context), this.sshKeyID.Get(context), this.userData.Get(context), this.optimized.Get(context));
                         serverIDlist.Add(srvID);
                     }
                 }
                 else
                 {
-                    string srvID = Server.create(this.cloudID.Get(context), this.deploymentID.Get(context), this.serverTemplateID.Get(context), this.name.Get(context), this.description.Get(context), this.cloudID.Get(context), this.description.Get(context), this.imageID.Get(context), this.inputs.Get(context), this.instanceTypeID.Get(context), this.kernelImageID.Get(context), this.multiCloudImageID.Get(context), this.ramdiskImageID.Get(context), this.securityGroupIDs.Get(context), this.sshKeyID.Get(context), this.userData.Get(context), this.optimized.Get(context));
+                    string desc = this.description.Get(context);
+                    if (string.IsNullOrWhiteSpace(desc))
+                    {
+                        desc = getDefaultDescription();
+                    }
+                    string srvID = Server.create(this.cloudID.Get(context), this.deploymentID.Get(context), this.serverTemplateID.Get(context), this.name.Get(context), desc, this.cloudID.Get(context), this.description.Get(context), this.imageID.Get(context), this.inputs.Get(context), this.instanceTypeID.Get(context), this.kernelImageID.Get(context), this.multiCloudImageID.Get(context), this.ramdiskImageID.Get(context), this.securityGroupIDs.Get(context), this.sshKeyID.Get(context), this.userData.Get(context), this.optimized.Get(context));
                     serverIDlist.Add(srvID);
                 }
             }
             this.serverIDs.Set(context, serverIDlist);
+        }
+
+        private string getDefaultDescription()
+        {
+            return "Server created by Windows 3 Tier Workflow project based on RightScale.netClient library at " + DateTime.Now.ToString();
         }
     }
 }
