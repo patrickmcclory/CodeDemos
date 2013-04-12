@@ -75,21 +75,34 @@ namespace RightScale._3Tier.Workflow
 
             Dictionary<string, object> inputs = new Dictionary<string, object>();
 
+            string dbUserName = "mileageStatsUser";
+            string dbPassword = "P@ssword1";
+            string sqlDB1DNSName = "winworkflowdb1.cloudlord.com";
+            string sqlDB2DNSName = "winworkflowdb2.cloudlord.com";
+
+            List<Input> sql1Inputs = new List<Input>();
+            sql1Inputs.Add(new Input("DNS_DOMAIN_NAME", "text:" + sqlDB1DNSName));
+            sql1Inputs.Add(new Input("DNS_ID", "text:10244681"));
+            sql1Inputs.Add(new Input("DB_NEW_LOGIN_NAME", "text:" + dbUserName));
+            sql1Inputs.Add(new Input("DB_NEW_LOGIN_PASSWORD", "text:" + dbPassword));
+
+            string connectionString = string.Format("Data Source={0};Failover Partner={1};Database={2};User Id={3};Password={4};", sqlDB1DNSName, sqlDB2DNSName, sqlDatabaseName, dbUserName, dbPassword);
+
+            string iisParameterSet = string.Format(@"<?xml version=""1.0"" encoding=""utf-8""?><parameters><setParameter name=""IIS Web Application Name"" value=""{0}"" /><setParameter name=""MileageStatsDbContext-Web.config Connection String"" value=""{1}"" /></parameters>", msDeploySiteName, connectionString);
+
             List<Input> deploymentLevelInputs = new List<Input>();
             deploymentLevelInputs.AddRange(getLBInputs());
             deploymentLevelInputs.AddRange(getWindowsInputs());
             deploymentLevelInputs.AddRange(getSQLInputs());
             deploymentLevelInputs.AddRange(getIISInputs());
+            deploymentLevelInputs.Add(new Input("MSDEPLOY_PARAMETERFILECONTENT", formatInput(iisParameterSet)));
+            deploymentLevelInputs.Add(new Input("MSDEPLOY_PARAMETERFILECONTENTISBASE64", formatInput("false")));
 
             inputs.Add("deploymentLevelInputs", deploymentLevelInputs);
 
 
-            List<Input> sql1Inputs = new List<Input>();
-            sql1Inputs.Add(new Input("DNS_DOMAIN_NAME", "text:winworkflowdb1.cloudlord.com"));
-            sql1Inputs.Add(new Input("DNS_ID", "text:10244681"));
-
             List<Input> sql2Inputs = new List<Input>();
-            sql2Inputs.Add(new Input("DNS_DOMAIN_NAME", "text:winworkflowdb2.cloudlord.com"));
+            sql2Inputs.Add(new Input("DNS_DOMAIN_NAME", "text:" + sqlDB2DNSName));
             sql2Inputs.Add(new Input("DNS_ID", "text:10244682"));
 
             inputs.Add("sql1Inputs", sql1Inputs);
@@ -371,6 +384,11 @@ namespace RightScale._3Tier.Workflow
         private static string sqlBackupFileName = "mileagestatsdata_sql2012.bak";
         private static string sqlDatabaseName = "MileageStatsData";
         private static string sqlServerMode = "Standalone";
+        private static string dbPrivateKeyPassword = "P@ssword1";
+        private static string dbPrimaryCert = "cred:sqlServerCertificatePrimary";
+        private static string dbSecondaryCert = "cred:sqlServerCertificateSecondary";
+        private static string dbWitnessCert = "cred:sqlServerCertificateWitness";
+        private static string dbMSSQLProductKey = "cred:mssql_SQLStandardKey";
 
         static void buildSQLInputs()
         {
@@ -491,6 +509,13 @@ namespace RightScale._3Tier.Workflow
             retVal.Add(new Input("BACKUP_FILE_NAME", formatInput(sqlBackupFileName)));
             retVal.Add(new Input("DB_NAME", formatInput(sqlDatabaseName)));
             retVal.Add(new Input("SERVER_MODE", formatInput(sqlServerMode)));
+            retVal.Add(new Input("PRINCIPAL_CERTIFICATE", formatInput(dbPrimaryCert)));
+            retVal.Add(new Input("PRINCIPAL_PRIVATE_KEY_PASSWORD", formatInput(dbPrivateKeyPassword)));
+            retVal.Add(new Input("MIRROR_CERTIFICATE", formatInput(dbSecondaryCert)));
+            retVal.Add(new Input("MIRROR_PRIVATE_KEY_PASSWORD", formatInput(dbPrivateKeyPassword)));
+            retVal.Add(new Input("WITNESS_CERTIFICATE", formatInput(dbWitnessCert)));
+            retVal.Add(new Input("WITNESS_PRIVATE_KEY_PASSWORD", formatInput(dbPrivateKeyPassword)));
+            retVal.Add(new Input("MSSQL_PRODUCT_KEY", formatInput(dbMSSQLProductKey)));
 
             return retVal;
         }
@@ -530,11 +555,13 @@ namespace RightScale._3Tier.Workflow
         }
 
         private static string iisLBVHostName = "mileagestats";
-        private static string iisZipFileName = "Build_20130318050444.zip";
+        private static string iisZipFileName = "MileageStatsStable.zip";
         private static string iisRemoteStorageAccountIDApp = "cred:azureStorage_devTest_AccountName";
         private static string iisRemoteStorageAccountSecretApp = "cred:azureStorage_devTest_AccountKey";
         private static string iisRemoteStorageAccountProviderApp = "Windows_Azure_Storage";
         private static string iisRemoteStorageContainerApp = "media";
+        private static string applicationListenerPort = "80";
+        private static string msDeploySiteName = "Default Web Site";
 
         static void buildIISInputs()
         {
@@ -600,6 +627,9 @@ namespace RightScale._3Tier.Workflow
             retVal.Add(new Input("REMOTE_STORAGE_CONTAINER_APP", formatInput(iisRemoteStorageContainerApp)));
             retVal.Add(new Input("ZIP_FILE_NAME", formatInput(iisZipFileName)));
             retVal.Add(new Input("LB_VHOST_NAME", formatInput(iisLBVHostName)));
+            retVal.Add(new Input("APPLICATION_LISTENER_PORT", formatInput(applicationListenerPort)));
+            retVal.Add(new Input("MSDEPLOY_SITE_NAME", formatInput(msDeploySiteName)));
+            retVal.Add(new Input("WEB_SITE_NAME", formatInput(msDeploySiteName)));
 
             return retVal;
         }

@@ -37,9 +37,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Newtonsoft.Json.5.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="RightScale.netClient, Version=0.2.5.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="RightScale.netClient, Version=0.2.7.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\RightScale.netClient.0.2.5-alpha\lib\net45\RightScale.netClient.dll</HintPath>
+      <HintPath>..\packages\RightScale.netClient.0.2.7-alpha\lib\net45\RightScale.netClient.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Activities" />
@@ -62,6 +62,7 @@
     <Compile Include="CreateDeployment.cs" />
     <Compile Include="CreateServer.cs" />
     <Compile Include="CreateServerArray.cs" />
+    <Compile Include="EnableServerArray.cs" />
     <Compile Include="GetServerState.cs" />
     <Compile Include="LaunchServer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
