@@ -10,53 +10,29 @@ namespace RightScale.phbDemo
 {
     public class Program
     {
-        private static int selCol = 0;
+        private static HC_SR04 sensor;
 
         public static void Main()
         {
             // write your code here
-            //SecretLabs.NETMF.Hardware.NetduinoGo.GoSockets.Socket1;
-            NetduinoGo.Button button1 = new NetduinoGo.Button();
-            NetduinoGo.RgbLed rgbLED1 = new RgbLed();
-            Potentiometer pot1 = new Potentiometer();
 
-            byte r = 0, g = 0, b = 0;
-            double oldPotVal = pot1.GetValue();
+            NetduinoGo.Button button = new NetduinoGo.Button(SecretLabs.NETMF.Hardware.NetduinoGo.GoSockets.Socket1);
+            ShieldBase sb = new ShieldBase(SecretLabs.NETMF.Hardware.NetduinoGo.GoSockets.Socket2);
 
-            button1.ButtonReleased += new NetduinoGo.Button.ButtonEventHandler(button1_ButtonReleased);
+            sensor = new HC_SR04(Cpu.Pin.GPIO_Pin1, Cpu.Pin.GPIO_Pin0);
 
-            while (true)
-            {
-                rgbLED1.SetColor(r, g, b);
-
-                if (pot1.GetValue() != oldPotVal)
-                {
-                    switch (selCol)
-                    {
-                        case 0:
-                            r = (byte)(pot1.GetValue() * 255);
-                            break;
-                        case 1:
-                            g = (byte)(pot1.GetValue() * 255);
-                            break;
-                        case 2:
-                            b = (byte)(pot1.GetValue() * 255);
-                            break;
-                    }
-                }
-            }
+            button.ButtonPressed += button_ButtonPressed;
+            
         }
 
-        private static void button1_ButtonReleased(object sender, bool buttonState)
+        static void button_ButtonPressed(object sender, bool isPressed)
         {
-            if (selCol < 2)
+            long ticks = sensor.Ping();
+            if (ticks > 0L)
             {
-                selCol++;
+                double inches = sensor.TicksToInches(ticks);
             }
-            else
-            {
-                selCol = 0;
-            }
+
         }
 
     }

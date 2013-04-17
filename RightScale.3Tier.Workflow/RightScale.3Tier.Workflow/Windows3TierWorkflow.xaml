@@ -1,4 +1,4 @@
-﻿<Activity mc:Ignorable="sap sap2010 sads" x:Class="RightScale._3Tier.Workflow.Workflow1" this:Workflow1.deploymentDescription="Workflow Created Deployment"
+﻿<Activity mc:Ignorable="sap sap2010 sads" x:Class="RightScale._3Tier.Workflow.Windows3TierWorkflow" this:Windows3TierWorkflow.deploymentDescription="Workflow Created Deployment"
  xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities"
  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
  xmlns:mca="clr-namespace:Microsoft.CSharp.Activities;assembly=System.Activities"
@@ -25,13 +25,10 @@
     <x:Property Name="rsUsername" Type="InArgument(x:String)" />
     <x:Property Name="rsPassword" Type="InArgument(x:String)" />
     <x:Property Name="rsAccountNo" Type="InArgument(x:String)" />
-    <x:Property Name="serverLoadBalancerID" Type="InArgument(x:String)" />
-    <x:Property Name="serverLoadBalancerCount" Type="InArgument(x:Int32)" />
-    <x:Property Name="serverSQLServerID" Type="InArgument(x:String)" />
-    <x:Property Name="serverSQLServerCount" Type="InArgument(x:Int32)" />
-    <x:Property Name="serverIISServerID" Type="InArgument(x:String)" />
-    <x:Property Name="serverIISServerMinCount" Type="InArgument(x:Int32)" />
-    <x:Property Name="serverIISServerMaxCount" Type="InArgument(x:Int32)" />
+    <x:Property Name="serverLoadBalancerCount" Type="InArgument(x:String)" />
+    <x:Property Name="serverSQLServerCount" Type="InArgument(x:String)" />
+    <x:Property Name="serverIISServerMinCount" Type="InArgument(x:String)" />
+    <x:Property Name="serverIISServerMaxCount" Type="InArgument(x:String)" />
     <x:Property Name="deploymentLevelInputs" Type="InArgument(scg:List(rn:Input))" />
     <x:Property Name="databaseDNSNames" Type="InArgument(scg:List(scg:KeyValuePair(x:String, x:String)))" />
     <x:Property Name="serverCloudID" Type="InArgument(x:String)" />
@@ -42,6 +39,14 @@
     <x:Property Name="sqlServer1Launched" Type="InOutArgument(x:Boolean)" />
     <x:Property Name="sql1Inputs" Type="InArgument(scg:List(rn:Input))" />
     <x:Property Name="sql2Inputs" Type="InArgument(scg:List(rn:Input))" />
+    <x:Property Name="serverIISServerTemplateID" Type="InOutArgument(x:String)" />
+    <x:Property Name="serverSQLServerTemplateID" Type="InOutArgument(x:String)" />
+    <x:Property Name="serverLBServerTemplateID" Type="InOutArgument(x:String)" />
+    <x:Property Name="loadBalancerPublicationID" Type="InArgument(x:String)" />
+    <x:Property Name="sqlServerPublicationID" Type="InArgument(x:String)" />
+    <x:Property Name="iisServerPublicationID" Type="InArgument(x:String)" />
+    <x:Property Name="loadBalancerInstanceTypeID" Type="InArgument(x:String)" />
+    <x:Property Name="sqlServerInstanceTypeID" Type="InArgument(x:String)" />
   </x:Members>
   <sap2010:ExpressionActivityEditor.ExpressionActivityEditor>C#</sap2010:ExpressionActivityEditor.ExpressionActivityEditor>
   <sap2010:WorkflowViewState.IdRef>RightScale._3Tier.Workflow.Workflow1_1</sap2010:WorkflowViewState.IdRef>
@@ -58,6 +63,7 @@
     <sco:Collection x:TypeArguments="AssemblyReference">
       <AssemblyReference>Microsoft.CSharp</AssemblyReference>
       <AssemblyReference>Newtonsoft.Json</AssemblyReference>
+      <AssemblyReference>RightScale.netClient</AssemblyReference>
       <AssemblyReference>System</AssemblyReference>
       <AssemblyReference>System.Activities</AssemblyReference>
       <AssemblyReference>System.Core</AssemblyReference>
@@ -70,7 +76,6 @@
       <AssemblyReference>System.Xml</AssemblyReference>
       <AssemblyReference>System.Xml.Linq</AssemblyReference>
       <AssemblyReference>RightScale.netClient.ActivityLibrary</AssemblyReference>
-      <AssemblyReference>RightScale.netClient</AssemblyReference>
       <AssemblyReference>mscorlib</AssemblyReference>
       <AssemblyReference>RightScale.3Tier.Workflow</AssemblyReference>
     </sco:Collection>
@@ -88,11 +93,104 @@
         </Variable.Default>
       </Variable>
     </Sequence.Variables>
-    <WriteLine sap2010:WorkflowViewState.IdRef="WriteLine_4">
-      <InArgument x:TypeArguments="x:String">
-        <mca:CSharpValue x:TypeArguments="x:String">"Starting Workflow - Beginning Create Deployment process at " + DateTime.Now.ToString()</mca:CSharpValue>
-      </InArgument>
-    </WriteLine>
+    <Parallel DisplayName="Import ServerTemplates" sap2010:WorkflowViewState.IdRef="Parallel_6">
+      <rna:ImportPublication DisplayName="Import LB ServerTemplate" sap2010:WorkflowViewState.IdRef="ImportPublication_1">
+        <rna:ImportPublication.publicationID>
+          <InArgument x:TypeArguments="x:String">
+            <mca:CSharpValue x:TypeArguments="x:String">loadBalancerPublicationID</mca:CSharpValue>
+          </InArgument>
+        </rna:ImportPublication.publicationID>
+        <rna:ImportPublication.rsAccountID>
+          <InArgument x:TypeArguments="x:String">
+            <mca:CSharpValue x:TypeArguments="x:String">rsAccountNo</mca:CSharpValue>
+          </InArgument>
+        </rna:ImportPublication.rsAccountID>
+        <rna:ImportPublication.rsOAuthToken>
+          <InArgument x:TypeArguments="x:String">
+            <mca:CSharpValue x:TypeArguments="x:String">rsOauthRefreshToken</mca:CSharpValue>
+          </InArgument>
+        </rna:ImportPublication.rsOAuthToken>
+        <rna:ImportPublication.rsPassword>
+          <InArgument x:TypeArguments="x:String">
+            <mca:CSharpValue x:TypeArguments="x:String">rsPassword</mca:CSharpValue>
+          </InArgument>
+        </rna:ImportPublication.rsPassword>
+        <rna:ImportPublication.rsUserName>
+          <InArgument x:TypeArguments="x:String">
+            <mca:CSharpValue x:TypeArguments="x:String">rsUsername</mca:CSharpValue>
+          </InArgument>
+        </rna:ImportPublication.rsUserName>
+        <rna:ImportPublication.serverTemplateID>
+          <OutArgument x:TypeArguments="x:String">
+            <mca:CSharpReference x:TypeArguments="x:String">serverLBServerTemplateID</mca:CSharpReference>
+          </OutArgument>
+        </rna:ImportPublication.serverTemplateID>
+      </rna:ImportPublication>
+      <rna:ImportPublication DisplayName="Import SQL ServerTemplate" sap2010:WorkflowViewState.IdRef="ImportPublication_2">
+        <rna:ImportPublication.publicationID>
+          <InArgument x:TypeArguments="x:String">
+            <mca:CSharpValue x:TypeArguments="x:String">sqlServerPublicationID</mca:CSharpValue>
+          </InArgument>
+        </rna:ImportPublication.publicationID>
+        <rna:ImportPublication.rsAccountID>
+          <InArgument x:TypeArguments="x:String">
+            <mca:CSharpValue x:TypeArguments="x:String">rsAccountNo</mca:CSharpValue>
+          </InArgument>
+        </rna:ImportPublication.rsAccountID>
+        <rna:ImportPublication.rsOAuthToken>
+          <InArgument x:TypeArguments="x:String">
+            <mca:CSharpValue x:TypeArguments="x:String">rsOauthRefreshToken</mca:CSharpValue>
+          </InArgument>
+        </rna:ImportPublication.rsOAuthToken>
+        <rna:ImportPublication.rsPassword>
+          <InArgument x:TypeArguments="x:String">
+            <mca:CSharpValue x:TypeArguments="x:String">rsPassword</mca:CSharpValue>
+          </InArgument>
+        </rna:ImportPublication.rsPassword>
+        <rna:ImportPublication.rsUserName>
+          <InArgument x:TypeArguments="x:String">
+            <mca:CSharpValue x:TypeArguments="x:String">rsUsername</mca:CSharpValue>
+          </InArgument>
+        </rna:ImportPublication.rsUserName>
+        <rna:ImportPublication.serverTemplateID>
+          <OutArgument x:TypeArguments="x:String">
+            <mca:CSharpReference x:TypeArguments="x:String">serverSQLServerTemplateID</mca:CSharpReference>
+          </OutArgument>
+        </rna:ImportPublication.serverTemplateID>
+      </rna:ImportPublication>
+      <rna:ImportPublication DisplayName="Import IIS ServerTemplate" sap2010:WorkflowViewState.IdRef="ImportPublication_3">
+        <rna:ImportPublication.publicationID>
+          <InArgument x:TypeArguments="x:String">
+            <mca:CSharpValue x:TypeArguments="x:String">iisServerPublicationID</mca:CSharpValue>
+          </InArgument>
+        </rna:ImportPublication.publicationID>
+        <rna:ImportPublication.rsAccountID>
+          <InArgument x:TypeArguments="x:String">
+            <mca:CSharpValue x:TypeArguments="x:String">rsAccountNo</mca:CSharpValue>
+          </InArgument>
+        </rna:ImportPublication.rsAccountID>
+        <rna:ImportPublication.rsOAuthToken>
+          <InArgument x:TypeArguments="x:String">
+            <mca:CSharpValue x:TypeArguments="x:String">rsOauthRefreshToken</mca:CSharpValue>
+          </InArgument>
+        </rna:ImportPublication.rsOAuthToken>
+        <rna:ImportPublication.rsPassword>
+          <InArgument x:TypeArguments="x:String">
+            <mca:CSharpValue x:TypeArguments="x:String">rsPassword</mca:CSharpValue>
+          </InArgument>
+        </rna:ImportPublication.rsPassword>
+        <rna:ImportPublication.rsUserName>
+          <InArgument x:TypeArguments="x:String">
+            <mca:CSharpValue x:TypeArguments="x:String">rsUsername</mca:CSharpValue>
+          </InArgument>
+        </rna:ImportPublication.rsUserName>
+        <rna:ImportPublication.serverTemplateID>
+          <OutArgument x:TypeArguments="x:String">
+            <mca:CSharpReference x:TypeArguments="x:String">serverIISServerTemplateID</mca:CSharpReference>
+          </OutArgument>
+        </rna:ImportPublication.serverTemplateID>
+      </rna:ImportPublication>
+    </Parallel>
     <rna:CreateDeployment DisplayName="Create Deployment" sap2010:WorkflowViewState.IdRef="CreateDeployment_2">
       <rna:CreateDeployment.DeploymentDescription>
         <InArgument x:TypeArguments="x:String">
@@ -140,13 +238,8 @@
         </InArgument>
       </rna:CreateDeployment.rsUserName>
     </rna:CreateDeployment>
-    <WriteLine sap2010:WorkflowViewState.IdRef="WriteLine_5">
-      <InArgument x:TypeArguments="x:String">
-        <mca:CSharpValue x:TypeArguments="x:String">"Beginning Parallel create servers process at " + DateTime.Now.ToString();</mca:CSharpValue>
-      </InArgument>
-    </WriteLine>
-    <Parallel DisplayName="Parallel create servers" sap2010:WorkflowViewState.IdRef="Parallel_2">
-      <rna:CreateServer description="{x:Null}" imageID="{x:Null}" inputs="{x:Null}" instanceTypeID="{x:Null}" kernelImageID="{x:Null}" multiCloudImageID="{x:Null}" optimized="{x:Null}" ramdiskImageID="{x:Null}" securityGroupIDs="{x:Null}" sshKeyID="{x:Null}" userData="{x:Null}" DisplayName="Create LB Servers" sap2010:WorkflowViewState.IdRef="CreateServer_3" name="HAProxy + Apache Load Balancer">
+    <Parallel DisplayName="Create servers" sap2010:WorkflowViewState.IdRef="Parallel_2">
+      <rna:CreateServer description="{x:Null}" imageID="{x:Null}" inputs="{x:Null}" kernelImageID="{x:Null}" multiCloudImageID="{x:Null}" optimized="{x:Null}" ramdiskImageID="{x:Null}" securityGroupIDs="{x:Null}" sshKeyID="{x:Null}" userData="{x:Null}" DisplayName="Create LB Servers" sap2010:WorkflowViewState.IdRef="CreateServer_3" name="HAProxy + Apache Load Balancer">
         <rna:CreateServer.cloudID>
           <InArgument x:TypeArguments="x:String">
             <mca:CSharpValue x:TypeArguments="x:String">serverCloudID</mca:CSharpValue>
@@ -157,9 +250,14 @@
             <mca:CSharpValue x:TypeArguments="x:String">deploymentID</mca:CSharpValue>
           </InArgument>
         </rna:CreateServer.deploymentID>
+        <rna:CreateServer.instanceTypeID>
+          <InArgument x:TypeArguments="x:String">
+            <mca:CSharpValue x:TypeArguments="x:String">loadBalancerInstanceTypeID</mca:CSharpValue>
+          </InArgument>
+        </rna:CreateServer.instanceTypeID>
         <rna:CreateServer.numberOfServers>
           <InArgument x:TypeArguments="x:Int32">
-            <mca:CSharpValue x:TypeArguments="x:Int32">serverLoadBalancerCount</mca:CSharpValue>
+            <mca:CSharpValue x:TypeArguments="x:Int32">int.Parse(serverLoadBalancerCount)</mca:CSharpValue>
           </InArgument>
         </rna:CreateServer.numberOfServers>
         <rna:CreateServer.rsAccountID>
@@ -189,11 +287,11 @@
         </rna:CreateServer.serverIDs>
         <rna:CreateServer.serverTemplateID>
           <InArgument x:TypeArguments="x:String">
-            <mca:CSharpValue x:TypeArguments="x:String">serverLoadBalancerID</mca:CSharpValue>
+            <mca:CSharpValue x:TypeArguments="x:String">serverLBServerTemplateID</mca:CSharpValue>
           </InArgument>
         </rna:CreateServer.serverTemplateID>
       </rna:CreateServer>
-      <rna:CreateServer description="{x:Null}" imageID="{x:Null}" inputs="{x:Null}" instanceTypeID="{x:Null}" kernelImageID="{x:Null}" multiCloudImageID="{x:Null}" optimized="{x:Null}" ramdiskImageID="{x:Null}" securityGroupIDs="{x:Null}" sshKeyID="{x:Null}" userData="{x:Null}" DisplayName="Create SQL Servers" sap2010:WorkflowViewState.IdRef="CreateServer_4" name="SQL 2012 Server">
+      <rna:CreateServer description="{x:Null}" imageID="{x:Null}" inputs="{x:Null}" kernelImageID="{x:Null}" multiCloudImageID="{x:Null}" optimized="{x:Null}" ramdiskImageID="{x:Null}" securityGroupIDs="{x:Null}" sshKeyID="{x:Null}" userData="{x:Null}" DisplayName="Create SQL Servers" sap2010:WorkflowViewState.IdRef="CreateServer_4" name="SQL 2012 Server">
         <rna:CreateServer.cloudID>
           <InArgument x:TypeArguments="x:String">
             <mca:CSharpValue x:TypeArguments="x:String">serverCloudID</mca:CSharpValue>
@@ -204,9 +302,14 @@
             <mca:CSharpValue x:TypeArguments="x:String">deploymentID</mca:CSharpValue>
           </InArgument>
         </rna:CreateServer.deploymentID>
+        <rna:CreateServer.instanceTypeID>
+          <InArgument x:TypeArguments="x:String">
+            <mca:CSharpValue x:TypeArguments="x:String">sqlServerInstanceTypeID</mca:CSharpValue>
+          </InArgument>
+        </rna:CreateServer.instanceTypeID>
         <rna:CreateServer.numberOfServers>
           <InArgument x:TypeArguments="x:Int32">
-            <mca:CSharpValue x:TypeArguments="x:Int32">serverSQLServerCount</mca:CSharpValue>
+            <mca:CSharpValue x:TypeArguments="x:Int32">int.Parse(serverSQLServerCount)</mca:CSharpValue>
           </InArgument>
         </rna:CreateServer.numberOfServers>
         <rna:CreateServer.rsAccountID>
@@ -236,7 +339,7 @@
         </rna:CreateServer.serverIDs>
         <rna:CreateServer.serverTemplateID>
           <InArgument x:TypeArguments="x:String">
-            <mca:CSharpValue x:TypeArguments="x:String">serverSQLServerID</mca:CSharpValue>
+            <mca:CSharpValue x:TypeArguments="x:String">serverSQLServerTemplateID</mca:CSharpValue>
           </InArgument>
         </rna:CreateServer.serverTemplateID>
       </rna:CreateServer>
@@ -283,16 +386,11 @@
         </rna:CreateServerArray.serverArrayID>
         <rna:CreateServerArray.serverTemplateID>
           <InArgument x:TypeArguments="x:String">
-            <mca:CSharpValue x:TypeArguments="x:String">serverIISServerID</mca:CSharpValue>
+            <mca:CSharpValue x:TypeArguments="x:String">serverIISServerTemplateID</mca:CSharpValue>
           </InArgument>
         </rna:CreateServerArray.serverTemplateID>
       </rna:CreateServerArray>
     </Parallel>
-    <WriteLine sap2010:WorkflowViewState.IdRef="WriteLine_6">
-      <InArgument x:TypeArguments="x:String">
-        <mca:CSharpValue x:TypeArguments="x:String">"Beginning Server-Specific update tasks at " + DateTime.Now.ToString()</mca:CSharpValue>
-      </InArgument>
-    </WriteLine>
     <Parallel DisplayName="Update Server-Specific Inputs" sap2010:WorkflowViewState.IdRef="Parallel_5">
       <rna:UpdateInputs isUpdated="{x:Null}" DisplayName="Update SQL1 Inputs" sap2010:WorkflowViewState.IdRef="UpdateInputs_1">
         <rna:UpdateInputs.inputs>
@@ -359,11 +457,6 @@
         </rna:UpdateInputs.serverID>
       </rna:UpdateInputs>
     </Parallel>
-    <WriteLine DisplayName="Write line log status" sap2010:WorkflowViewState.IdRef="WriteLine_7">
-      <InArgument x:TypeArguments="x:String">
-        <mca:CSharpValue x:TypeArguments="x:String">"Beginning Parallel launch phase 1 (LB's and SQL Servers) at " + DateTime.Now.ToString()</mca:CSharpValue>
-      </InArgument>
-    </WriteLine>
     <Parallel DisplayName="Parallel Launch Phase 1 (LB's and SQL Server 1)" sap2010:WorkflowViewState.IdRef="Parallel_3">
       <Sequence DisplayName="Build SQL Server 1 (Primary)" sap2010:WorkflowViewState.IdRef="Sequence_3">
         <Sequence.Variables>
@@ -396,11 +489,6 @@
                       <mca:CSharpValue x:TypeArguments="x:TimeSpan">ParallelismDelay</mca:CSharpValue>
                     </InArgument>
                   </Delay>
-                  <WriteLine sap2010:WorkflowViewState.IdRef="WriteLine_8">
-                    <InArgument x:TypeArguments="x:String">
-                      <mca:CSharpValue x:TypeArguments="x:String" xml:space="preserve">"  Build SQL Server 1 (Primary) - Attempting launch at " + DateTime.Now.ToString()</mca:CSharpValue>
-                    </InArgument>
-                  </WriteLine>
                   <rna:LaunchServer DisplayName="Launch SQL Server 1" sap2010:WorkflowViewState.IdRef="LaunchServer_2">
                     <rna:LaunchServer.rsAccountID>
                       <InArgument x:TypeArguments="x:String">
@@ -433,11 +521,6 @@
                       </OutArgument>
                     </rna:LaunchServer.serverLaunched>
                   </rna:LaunchServer>
-                  <WriteLine sap2010:WorkflowViewState.IdRef="WriteLine_9">
-                    <InArgument x:TypeArguments="x:String">
-                      <mca:CSharpValue x:TypeArguments="x:String" xml:space="preserve">"  Build SQL Server 1 (Primary) Launch successful at " + DateTime.Now.ToString()</mca:CSharpValue>
-                    </InArgument>
-                  </WriteLine>
                 </Sequence>
               </TryCatch.Try>
               <TryCatch.Catches>
@@ -462,11 +545,6 @@
             <mca:CSharpValue x:TypeArguments="x:TimeSpan">ParallelismDelay</mca:CSharpValue>
           </InArgument>
         </Delay>
-        <WriteLine sap2010:WorkflowViewState.IdRef="WriteLine_10">
-          <InArgument x:TypeArguments="x:String">
-            <mca:CSharpValue x:TypeArguments="x:String" xml:space="preserve">"  Build SQL Server 1 (Primary) - begin waiting for server to become operational at " + DateTime.Now.ToString()</mca:CSharpValue>
-          </InArgument>
-        </WriteLine>
         <DoWhile DisplayName="Wait for SQL1 to become operational" sap2010:WorkflowViewState.IdRef="DoWhile_1">
           <DoWhile.Condition>
             <mca:CSharpValue x:TypeArguments="x:Boolean">!isSQL1Operational &amp;&amp; currentSQLServerState != "stranded";</mca:CSharpValue>
@@ -514,18 +592,8 @@
                 </OutArgument>
               </rna:GetServerState.serverState>
             </rna:GetServerState>
-            <WriteLine sap2010:WorkflowViewState.IdRef="WriteLine_11">
-              <InArgument x:TypeArguments="x:String">
-                <mca:CSharpValue x:TypeArguments="x:String" xml:space="preserve">"  Build SQL Server 1 (Primary) - Server current state is " + currentSQLServerState + " at " + DateTime.Now.ToString()</mca:CSharpValue>
-              </InArgument>
-            </WriteLine>
           </Sequence>
         </DoWhile>
-        <WriteLine sap2010:WorkflowViewState.IdRef="WriteLine_12">
-          <InArgument x:TypeArguments="x:String">
-            <mca:CSharpValue x:TypeArguments="x:String" xml:space="preserve">"  Build SQL Server 1 (Primary) - Server launched into " + currentSQLServerState + " state at " + DateTime.Now.ToString()</mca:CSharpValue>
-          </InArgument>
-        </WriteLine>
         <If DisplayName="Check to make sure that server has not stranded" sap2010:WorkflowViewState.IdRef="If_1">
           <If.Condition>
             <InArgument x:TypeArguments="x:Boolean">
@@ -543,70 +611,102 @@
           </If.Then>
           <If.Else>
             <Sequence DisplayName="Run operational scripts" sap2010:WorkflowViewState.IdRef="Sequence_8">
-              <WriteLine sap2010:WorkflowViewState.IdRef="WriteLine_13">
-                <InArgument x:TypeArguments="x:String">
-                  <mca:CSharpValue x:TypeArguments="x:String" xml:space="preserve">"  Build SQL Server 1 (Primary) - Restore Database beginning at " + DateTime.Now.ToString()</mca:CSharpValue>
+              <Delay DisplayName="Parallelism Delay" sap2010:WorkflowViewState.IdRef="Delay_17">
+                <InArgument x:TypeArguments="x:TimeSpan">
+                  <mca:CSharpValue x:TypeArguments="x:TimeSpan">ParallelismDelay</mca:CSharpValue>
                 </InArgument>
-              </WriteLine>
-              <rna:RunRightScript inputs="{x:Null}" taskID="{x:Null}" DisplayName="Restore DB" sap2010:WorkflowViewState.IdRef="RunRightScript_1" ignoreLock="True" scriptOrIDString="438636001">
-                <rna:RunRightScript.rsAccountID>
+              </Delay>
+              <rna:RunScriptOrRecipe inputs="{x:Null}" taskID="{x:Null}" DisplayName="Restore DB" sap2010:WorkflowViewState.IdRef="RunScriptOrRecipe_1" ignoreLock="True" scriptIdOrRecipeName="438636001">
+                <rna:RunScriptOrRecipe.rsAccountID>
                   <InArgument x:TypeArguments="x:String">
                     <mca:CSharpValue x:TypeArguments="x:String">rsAccountNo</mca:CSharpValue>
                   </InArgument>
-                </rna:RunRightScript.rsAccountID>
-                <rna:RunRightScript.rsOAuthToken>
+                </rna:RunScriptOrRecipe.rsAccountID>
+                <rna:RunScriptOrRecipe.rsOAuthToken>
                   <InArgument x:TypeArguments="x:String">
                     <mca:CSharpValue x:TypeArguments="x:String">rsOauthRefreshToken</mca:CSharpValue>
                   </InArgument>
-                </rna:RunRightScript.rsOAuthToken>
-                <rna:RunRightScript.rsPassword>
+                </rna:RunScriptOrRecipe.rsOAuthToken>
+                <rna:RunScriptOrRecipe.rsPassword>
                   <InArgument x:TypeArguments="x:String">
                     <mca:CSharpValue x:TypeArguments="x:String">rsPassword</mca:CSharpValue>
                   </InArgument>
-                </rna:RunRightScript.rsPassword>
-                <rna:RunRightScript.rsUserName>
+                </rna:RunScriptOrRecipe.rsPassword>
+                <rna:RunScriptOrRecipe.rsUserName>
                   <InArgument x:TypeArguments="x:String">
                     <mca:CSharpValue x:TypeArguments="x:String">rsUsername</mca:CSharpValue>
                   </InArgument>
-                </rna:RunRightScript.rsUserName>
-                <rna:RunRightScript.serverID>
+                </rna:RunScriptOrRecipe.rsUserName>
+                <rna:RunScriptOrRecipe.serverID>
                   <InArgument x:TypeArguments="x:String">
                     <mca:CSharpValue x:TypeArguments="x:String">sqlServerIDs[0]</mca:CSharpValue>
                   </InArgument>
-                </rna:RunRightScript.serverID>
-              </rna:RunRightScript>
-              <WriteLine sap2010:WorkflowViewState.IdRef="WriteLine_14">
-                <InArgument x:TypeArguments="x:String">
-                  <mca:CSharpValue x:TypeArguments="x:String" xml:space="preserve">"  Build SQL Server 1 (Primary) - Beginning Create DB User at " + DateTime.Now.ToString()</mca:CSharpValue>
+                </rna:RunScriptOrRecipe.serverID>
+              </rna:RunScriptOrRecipe>
+              <Delay DisplayName="Parallelism Delay" sap2010:WorkflowViewState.IdRef="Delay_18">
+                <InArgument x:TypeArguments="x:TimeSpan">
+                  <mca:CSharpValue x:TypeArguments="x:TimeSpan">ParallelismDelay</mca:CSharpValue>
                 </InArgument>
-              </WriteLine>
-              <rna:RunRightScript inputs="{x:Null}" taskID="{x:Null}" DisplayName="Create DB User" sap2010:WorkflowViewState.IdRef="RunRightScript_2" ignoreLock="True" scriptOrIDString="438620001">
-                <rna:RunRightScript.rsAccountID>
+              </Delay>
+              <rna:RunScriptOrRecipe inputs="{x:Null}" taskID="{x:Null}" DisplayName="Create DB User" sap2010:WorkflowViewState.IdRef="RunScriptOrRecipe_2" ignoreLock="True" scriptIdOrRecipeName="438620001">
+                <rna:RunScriptOrRecipe.rsAccountID>
                   <InArgument x:TypeArguments="x:String">
                     <mca:CSharpValue x:TypeArguments="x:String">rsAccountNo</mca:CSharpValue>
                   </InArgument>
-                </rna:RunRightScript.rsAccountID>
-                <rna:RunRightScript.rsOAuthToken>
+                </rna:RunScriptOrRecipe.rsAccountID>
+                <rna:RunScriptOrRecipe.rsOAuthToken>
                   <InArgument x:TypeArguments="x:String">
                     <mca:CSharpValue x:TypeArguments="x:String">rsOauthRefreshToken</mca:CSharpValue>
                   </InArgument>
-                </rna:RunRightScript.rsOAuthToken>
-                <rna:RunRightScript.rsPassword>
+                </rna:RunScriptOrRecipe.rsOAuthToken>
+                <rna:RunScriptOrRecipe.rsPassword>
                   <InArgument x:TypeArguments="x:String">
                     <mca:CSharpValue x:TypeArguments="x:String">rsPassword</mca:CSharpValue>
                   </InArgument>
-                </rna:RunRightScript.rsPassword>
-                <rna:RunRightScript.rsUserName>
+                </rna:RunScriptOrRecipe.rsPassword>
+                <rna:RunScriptOrRecipe.rsUserName>
                   <InArgument x:TypeArguments="x:String">
                     <mca:CSharpValue x:TypeArguments="x:String">rsUsername</mca:CSharpValue>
                   </InArgument>
-                </rna:RunRightScript.rsUserName>
-                <rna:RunRightScript.serverID>
+                </rna:RunScriptOrRecipe.rsUserName>
+                <rna:RunScriptOrRecipe.serverID>
                   <InArgument x:TypeArguments="x:String">
                     <mca:CSharpValue x:TypeArguments="x:String">sqlServerIDs[0]</mca:CSharpValue>
                   </InArgument>
-                </rna:RunRightScript.serverID>
-              </rna:RunRightScript>
+                </rna:RunScriptOrRecipe.serverID>
+              </rna:RunScriptOrRecipe>
+              <Delay DisplayName="Parallelism Delay" sap2010:WorkflowViewState.IdRef="Delay_19">
+                <InArgument x:TypeArguments="x:TimeSpan">
+                  <mca:CSharpValue x:TypeArguments="x:TimeSpan">ParallelismDelay</mca:CSharpValue>
+                </InArgument>
+              </Delay>
+              <rna:RunScriptOrRecipe inputs="{x:Null}" taskID="{x:Null}" DisplayName="SQL 1 - Init Primary" sap2010:WorkflowViewState.IdRef="RunScriptOrRecipe_3" ignoreLock="True" scriptIdOrRecipeName="438622001">
+                <rna:RunScriptOrRecipe.rsAccountID>
+                  <InArgument x:TypeArguments="x:String">
+                    <mca:CSharpValue x:TypeArguments="x:String">rsAccountNo</mca:CSharpValue>
+                  </InArgument>
+                </rna:RunScriptOrRecipe.rsAccountID>
+                <rna:RunScriptOrRecipe.rsOAuthToken>
+                  <InArgument x:TypeArguments="x:String">
+                    <mca:CSharpValue x:TypeArguments="x:String">rsOauthRefreshToken</mca:CSharpValue>
+                  </InArgument>
+                </rna:RunScriptOrRecipe.rsOAuthToken>
+                <rna:RunScriptOrRecipe.rsPassword>
+                  <InArgument x:TypeArguments="x:String">
+                    <mca:CSharpValue x:TypeArguments="x:String">rsPassword</mca:CSharpValue>
+                  </InArgument>
+                </rna:RunScriptOrRecipe.rsPassword>
+                <rna:RunScriptOrRecipe.rsUserName>
+                  <InArgument x:TypeArguments="x:String">
+                    <mca:CSharpValue x:TypeArguments="x:String">rsUsername</mca:CSharpValue>
+                  </InArgument>
+                </rna:RunScriptOrRecipe.rsUserName>
+                <rna:RunScriptOrRecipe.serverID>
+                  <InArgument x:TypeArguments="x:String">
+                    <mca:CSharpValue x:TypeArguments="x:String">sqlServerIDs[0]</mca:CSharpValue>
+                  </InArgument>
+                </rna:RunScriptOrRecipe.serverID>
+              </rna:RunScriptOrRecipe>
             </Sequence>
           </If.Else>
         </If>
@@ -621,12 +721,7 @@
           <ActivityAction.Argument>
             <DelegateInArgument x:TypeArguments="x:String" Name="item" />
           </ActivityAction.Argument>
-          <Sequence sap2010:WorkflowViewState.IdRef="Sequence_13">
-            <WriteLine sap2010:WorkflowViewState.IdRef="WriteLine_15">
-              <InArgument x:TypeArguments="x:String">
-                <mca:CSharpValue x:TypeArguments="x:String" xml:space="preserve">"  Launch Load Balancers - beginning process at " + DateTime.Now.ToString()</mca:CSharpValue>
-              </InArgument>
-            </WriteLine>
+          <Sequence sap2010:WorkflowViewState.IdRef="Sequence_21">
             <Sequence DisplayName="Launch LB Server" sap2010:WorkflowViewState.IdRef="Sequence_4">
               <Sequence.Variables>
                 <Variable x:TypeArguments="x:Boolean" Name="isLaunchBooting">
@@ -648,11 +743,6 @@
                         <mca:CSharpValue x:TypeArguments="x:TimeSpan">ParallelismDelay</mca:CSharpValue>
                       </InArgument>
                     </Delay>
-                    <WriteLine sap2010:WorkflowViewState.IdRef="WriteLine_16">
-                      <InArgument x:TypeArguments="x:String">
-                        <mca:CSharpValue x:TypeArguments="x:String" xml:space="preserve">"  Launch Load Balancers - launching server " + (lbServerIDs.IndexOf(item) + 1).ToString() + " of " + lbServerIDs.Count.ToString() + " at " + DateTime.Now.ToString()</mca:CSharpValue>
-                      </InArgument>
-                    </WriteLine>
                     <rna:LaunchServer serverLaunched="{x:Null}" sap2010:WorkflowViewState.IdRef="LaunchServer_1">
                       <rna:LaunchServer.rsAccountID>
                         <InArgument x:TypeArguments="x:String">
@@ -680,11 +770,6 @@
                         </InArgument>
                       </rna:LaunchServer.serverID>
                     </rna:LaunchServer>
-                    <WriteLine sap2010:WorkflowViewState.IdRef="WriteLine_17">
-                      <InArgument x:TypeArguments="x:String">
-                        <mca:CSharpValue x:TypeArguments="x:String" xml:space="preserve">"  Launch Load Balancers - server launch " + (lbServerIDs.IndexOf(item) + 1).ToString() + " of " + lbServerIDs.Count.ToString() + " successful at " + DateTime.Now.ToString()</mca:CSharpValue>
-                      </InArgument>
-                    </WriteLine>
                   </Sequence>
                 </TryCatch.Try>
                 <TryCatch.Catches>
@@ -707,11 +792,6 @@
                   <mca:CSharpValue x:TypeArguments="x:TimeSpan">ParallelismDelay</mca:CSharpValue>
                 </InArgument>
               </Delay>
-              <WriteLine sap2010:WorkflowViewState.IdRef="WriteLine_18">
-                <InArgument x:TypeArguments="x:String">
-                  <mca:CSharpValue x:TypeArguments="x:String" xml:space="preserve">"  Launch Load Balancers - begin waiting for server " + (lbServerIDs.IndexOf(item) + 1).ToString() + " of " + lbServerIDs.Count.ToString() + " to become operational at " + DateTime.Now.ToString()</mca:CSharpValue>
-                </InArgument>
-              </WriteLine>
               <DoWhile DisplayName="Wait for LB Server to become operational" sap2010:WorkflowViewState.IdRef="DoWhile_2">
                 <DoWhile.Condition>
                   <mca:CSharpValue x:TypeArguments="x:Boolean">!isLaunchBooting &amp;&amp; currentState.ToLower() != "stranded";</mca:CSharpValue>
@@ -764,18 +844,8 @@
                       </InArgument>
                     </rna:GetServerState.successSate>
                   </rna:GetServerState>
-                  <WriteLine sap2010:WorkflowViewState.IdRef="WriteLine_19">
-                    <InArgument x:TypeArguments="x:String">
-                      <mca:CSharpValue x:TypeArguments="x:String" xml:space="preserve">"  Launch Load Balancers - server " + (lbServerIDs.IndexOf(item) + 1).ToString() + " of " + lbServerIDs.Count.ToString() + " - current state is " + currentState + " at " + DateTime.Now.ToString()</mca:CSharpValue>
-                    </InArgument>
-                  </WriteLine>
                 </Sequence>
               </DoWhile>
-              <WriteLine sap2010:WorkflowViewState.IdRef="WriteLine_20">
-                <InArgument x:TypeArguments="x:String">
-                  <mca:CSharpValue x:TypeArguments="x:String" xml:space="preserve">"  Launch Load Balancers - server " + (lbServerIDs.IndexOf(item) + 1).ToString() + " of " + lbServerIDs.Count.ToString() + " - Server launched into " + currentState + " state at " + DateTime.Now.ToString()</mca:CSharpValue>
-                </InArgument>
-              </WriteLine>
               <If sap2010:WorkflowViewState.IdRef="If_2">
                 <If.Condition>
                   <InArgument x:TypeArguments="x:Boolean">
@@ -808,11 +878,6 @@
             </Variable.Default>
           </Variable>
         </Sequence.Variables>
-        <WriteLine sap2010:WorkflowViewState.IdRef="WriteLine_21">
-          <InArgument x:TypeArguments="x:String">
-            <mca:CSharpValue x:TypeArguments="x:String" xml:space="preserve">"  Launch SQL Server 1 - Beginning Lanuch process at " + DateTime.Now.ToString()</mca:CSharpValue>
-          </InArgument>
-        </WriteLine>
         <TryCatch sap2010:WorkflowViewState.IdRef="TryCatch_3">
           <TryCatch.Try>
             <Sequence sap2010:WorkflowViewState.IdRef="Sequence_17">
@@ -821,11 +886,6 @@
                   <mca:CSharpValue x:TypeArguments="x:TimeSpan">ParallelismDelay</mca:CSharpValue>
                 </InArgument>
               </Delay>
-              <WriteLine sap2010:WorkflowViewState.IdRef="WriteLine_22">
-                <InArgument x:TypeArguments="x:String">
-                  <mca:CSharpValue x:TypeArguments="x:String" xml:space="preserve">"  Launch SQL Server 1 - Calling Launch on server at " + DateTime.Now.ToString()</mca:CSharpValue>
-                </InArgument>
-              </WriteLine>
               <rna:LaunchServer DisplayName="Launch SQL Server 2" sap2010:WorkflowViewState.IdRef="LaunchServer_3">
                 <rna:LaunchServer.rsAccountID>
                   <InArgument x:TypeArguments="x:String">
@@ -858,11 +918,6 @@
                   </OutArgument>
                 </rna:LaunchServer.serverLaunched>
               </rna:LaunchServer>
-              <WriteLine sap2010:WorkflowViewState.IdRef="WriteLine_23">
-                <InArgument x:TypeArguments="x:String">
-                  <mca:CSharpValue x:TypeArguments="x:String" xml:space="preserve">"  Launch SQL Server 1 - Launch call completed successfully at " + DateTime.Now.ToString()</mca:CSharpValue>
-                </InArgument>
-              </WriteLine>
             </Sequence>
           </TryCatch.Try>
           <TryCatch.Catches>
@@ -873,7 +928,7 @@
                 </ActivityAction.Argument>
                 <WriteLine sap2010:WorkflowViewState.IdRef="WriteLine_3">
                   <InArgument x:TypeArguments="x:String">
-                    <mca:CSharpValue x:TypeArguments="x:String" xml:space="preserve">"  Launch SQL Server 1 - Server cannot be launched due to API error: " + exception.ErrorData + " " + exception.Message;</mca:CSharpValue>
+                    <mca:CSharpValue x:TypeArguments="x:String" xml:space="preserve">"  Launch SQL Server 2 - Server cannot be launched due to API error: " + exception.ErrorData + " " + exception.Message;</mca:CSharpValue>
                   </InArgument>
                 </WriteLine>
               </ActivityAction>
@@ -885,11 +940,6 @@
             <mca:CSharpValue x:TypeArguments="x:TimeSpan">ParallelismDelay</mca:CSharpValue>
           </InArgument>
         </Delay>
-        <WriteLine sap2010:WorkflowViewState.IdRef="WriteLine_24">
-          <InArgument x:TypeArguments="x:String">
-            <mca:CSharpValue x:TypeArguments="x:String" xml:space="preserve">"  Launch SQL Server 1 - Begin waiting for Server to become operational at " + DateTime.Now.ToString()</mca:CSharpValue>
-          </InArgument>
-        </WriteLine>
         <DoWhile DisplayName="Wait for SQL2 to become operational" sap2010:WorkflowViewState.IdRef="DoWhile_3">
           <DoWhile.Condition>
             <mca:CSharpValue x:TypeArguments="x:Boolean">!isLaunchComplete &amp;&amp; sqlServer2State.ToLower() != "stranded";</mca:CSharpValue>
@@ -942,18 +992,8 @@
                 </InArgument>
               </rna:GetServerState.successSate>
             </rna:GetServerState>
-            <WriteLine sap2010:WorkflowViewState.IdRef="WriteLine_25">
-              <InArgument x:TypeArguments="x:String">
-                <mca:CSharpValue x:TypeArguments="x:String" xml:space="preserve">"  Launch SQL Server 1 - server current state is " + sqlServer2State + " at " + DateTime.Now.ToString()</mca:CSharpValue>
-              </InArgument>
-            </WriteLine>
           </Sequence>
         </DoWhile>
-        <WriteLine sap2010:WorkflowViewState.IdRef="WriteLine_26">
-          <InArgument x:TypeArguments="x:String">
-            <mca:CSharpValue x:TypeArguments="x:String" xml:space="preserve">"  Launch SQL Server 1 - server launched into " + sqlServer2State + " state at " + DateTime.Now.ToString()</mca:CSharpValue>
-          </InArgument>
-        </WriteLine>
         <If sap2010:WorkflowViewState.IdRef="If_3">
           <If.Condition>
             <InArgument x:TypeArguments="x:Boolean">
@@ -969,56 +1009,43 @@
           </If.Then>
         </If>
       </Sequence>
+      <Sequence DisplayName="Launch first ServerArray Instance" sap2010:WorkflowViewState.IdRef="Sequence_22">
+        <Delay DisplayName="Wait 5 mins to Launch Array Instance" sap2010:WorkflowViewState.IdRef="Delay_20">
+          <InArgument x:TypeArguments="x:TimeSpan">
+            <mca:CSharpValue x:TypeArguments="x:TimeSpan">new TimeSpan(0,5,0)</mca:CSharpValue>
+          </InArgument>
+        </Delay>
+        <rna:LaunchServerArray isLaunched="{x:Null}" serverID="{x:Null}" DisplayName="Launch ServerArray Instance" sap2010:WorkflowViewState.IdRef="LaunchServerArray_2">
+          <rna:LaunchServerArray.rsAccountID>
+            <InArgument x:TypeArguments="x:String">
+              <mca:CSharpValue x:TypeArguments="x:String">rsAccountNo</mca:CSharpValue>
+            </InArgument>
+          </rna:LaunchServerArray.rsAccountID>
+          <rna:LaunchServerArray.rsOAuthToken>
+            <InArgument x:TypeArguments="x:String">
+              <mca:CSharpValue x:TypeArguments="x:String">rsOauthRefreshToken</mca:CSharpValue>
+            </InArgument>
+          </rna:LaunchServerArray.rsOAuthToken>
+          <rna:LaunchServerArray.rsPassword>
+            <InArgument x:TypeArguments="x:String">
+              <mca:CSharpValue x:TypeArguments="x:String">rsPassword</mca:CSharpValue>
+            </InArgument>
+          </rna:LaunchServerArray.rsPassword>
+          <rna:LaunchServerArray.rsUserName>
+            <InArgument x:TypeArguments="x:String">
+              <mca:CSharpValue x:TypeArguments="x:String">rsUsername</mca:CSharpValue>
+            </InArgument>
+          </rna:LaunchServerArray.rsUserName>
+          <rna:LaunchServerArray.serverArrayID>
+            <InArgument x:TypeArguments="x:String">
+              <mca:CSharpValue x:TypeArguments="x:String">serverArrayID</mca:CSharpValue>
+            </InArgument>
+          </rna:LaunchServerArray.serverArrayID>
+        </rna:LaunchServerArray>
+      </Sequence>
     </Parallel>
-    <WriteLine sap2010:WorkflowViewState.IdRef="WriteLine_27">
-      <InArgument x:TypeArguments="x:String">
-        <mca:CSharpValue x:TypeArguments="x:String">"Completed Parallel launch phase 1 (LB's and SQL Servers) at " + DateTime.Now.ToString()</mca:CSharpValue>
-      </InArgument>
-    </WriteLine>
-    <WriteLine sap2010:WorkflowViewState.IdRef="WriteLine_28">
-      <InArgument x:TypeArguments="x:String">
-        <mca:CSharpValue x:TypeArguments="x:String">"Beginning SQL 1 - Init Primary RightScript at " + DateTime.Now.ToString()</mca:CSharpValue>
-      </InArgument>
-    </WriteLine>
-    <rna:RunRightScript inputs="{x:Null}" taskID="{x:Null}" DisplayName="SQL 1 - Init Primary" sap2010:WorkflowViewState.IdRef="RunRightScript_3" ignoreLock="True" scriptOrIDString="438622001">
-      <rna:RunRightScript.rsAccountID>
-        <InArgument x:TypeArguments="x:String">
-          <mca:CSharpValue x:TypeArguments="x:String">rsAccountNo</mca:CSharpValue>
-        </InArgument>
-      </rna:RunRightScript.rsAccountID>
-      <rna:RunRightScript.rsOAuthToken>
-        <InArgument x:TypeArguments="x:String">
-          <mca:CSharpValue x:TypeArguments="x:String">rsOauthRefreshToken</mca:CSharpValue>
-        </InArgument>
-      </rna:RunRightScript.rsOAuthToken>
-      <rna:RunRightScript.rsPassword>
-        <InArgument x:TypeArguments="x:String">
-          <mca:CSharpValue x:TypeArguments="x:String">rsPassword</mca:CSharpValue>
-        </InArgument>
-      </rna:RunRightScript.rsPassword>
-      <rna:RunRightScript.rsUserName>
-        <InArgument x:TypeArguments="x:String">
-          <mca:CSharpValue x:TypeArguments="x:String">rsUsername</mca:CSharpValue>
-        </InArgument>
-      </rna:RunRightScript.rsUserName>
-      <rna:RunRightScript.serverID>
-        <InArgument x:TypeArguments="x:String">
-          <mca:CSharpValue x:TypeArguments="x:String">sqlServerIDs[0]</mca:CSharpValue>
-        </InArgument>
-      </rna:RunRightScript.serverID>
-    </rna:RunRightScript>
-    <WriteLine sap2010:WorkflowViewState.IdRef="WriteLine_29">
-      <InArgument x:TypeArguments="x:String">
-        <mca:CSharpValue x:TypeArguments="x:String">"Completed SQL 1 - Init Primary RightScript call at " + DateTime.Now.ToString()</mca:CSharpValue>
-      </InArgument>
-    </WriteLine>
-    <WriteLine sap2010:WorkflowViewState.IdRef="WriteLine_30">
-      <InArgument x:TypeArguments="x:String">
-        <mca:CSharpValue x:TypeArguments="x:String">"Beginning Parallel Launch Phase 2 at " + DateTime.Now.ToString()</mca:CSharpValue>
-      </InArgument>
-    </WriteLine>
     <Parallel DisplayName="Parallel Launch Phase 2 (Server Array and SQL Server 2 init mirroring)" sap2010:WorkflowViewState.IdRef="Parallel_4">
-      <Sequence DisplayName="Launch IIS Array" sap2010:WorkflowViewState.IdRef="Sequence_6">
+      <Sequence DisplayName="Enable IIS Array" sap2010:WorkflowViewState.IdRef="Sequence_6">
         <Sequence.Variables>
           <Variable x:TypeArguments="x:Boolean" Name="arrayEnabled">
             <Variable.Default>
@@ -1026,11 +1053,6 @@
             </Variable.Default>
           </Variable>
         </Sequence.Variables>
-        <WriteLine sap2010:WorkflowViewState.IdRef="WriteLine_31">
-          <InArgument x:TypeArguments="x:String">
-            <mca:CSharpValue x:TypeArguments="x:String" xml:space="preserve">"  Launch IIS Array - begin update array to enabled at " + DateTime.Now.ToString()</mca:CSharpValue>
-          </InArgument>
-        </WriteLine>
         <rna:EnableServerArray sap2010:WorkflowViewState.IdRef="EnableServerArray_1">
           <rna:EnableServerArray.isEnabled>
             <OutArgument x:TypeArguments="x:Boolean">
@@ -1063,87 +1085,136 @@
             </InArgument>
           </rna:EnableServerArray.serverArrayID>
         </rna:EnableServerArray>
-        <WriteLine sap2010:WorkflowViewState.IdRef="WriteLine_32">
-          <InArgument x:TypeArguments="x:String">
-            <mca:CSharpValue x:TypeArguments="x:String" xml:space="preserve">"  Launch IIS Array - completed update array to enabled at " + DateTime.Now.ToString()</mca:CSharpValue>
+        <Delay DisplayName="Parallelism Delay" sap2010:WorkflowViewState.IdRef="Delay_21">
+          <InArgument x:TypeArguments="x:TimeSpan">
+            <mca:CSharpValue x:TypeArguments="x:TimeSpan">ParallelismDelay</mca:CSharpValue>
           </InArgument>
-        </WriteLine>
+        </Delay>
+        <While sap2010:WorkflowViewState.IdRef="While_2">
+          <While.Variables>
+            <Variable x:TypeArguments="x:Int32" Name="numActiveServers">
+              <Variable.Default>
+                <mca:CSharpValue x:TypeArguments="x:Int32">0;</mca:CSharpValue>
+              </Variable.Default>
+            </Variable>
+            <Variable x:TypeArguments="x:Boolean" Name="isArrayReady">
+              <Variable.Default>
+                <mca:CSharpValue x:TypeArguments="x:Boolean">false;</mca:CSharpValue>
+              </Variable.Default>
+            </Variable>
+          </While.Variables>
+          <While.Condition>
+            <mca:CSharpValue x:TypeArguments="x:Boolean">!isArrayReady;</mca:CSharpValue>
+          </While.Condition>
+          <Sequence sap2010:WorkflowViewState.IdRef="Sequence_19">
+            <Delay DisplayName="Parallelism Delay" sap2010:WorkflowViewState.IdRef="Delay_14">
+              <InArgument x:TypeArguments="x:TimeSpan">
+                <mca:CSharpValue x:TypeArguments="x:TimeSpan">ParallelismDelay</mca:CSharpValue>
+              </InArgument>
+            </Delay>
+            <rna:GetServerArrayState sap2010:WorkflowViewState.IdRef="GetServerArrayState_1" minNumServers="1">
+              <rna:GetServerArrayState.isOperational>
+                <OutArgument x:TypeArguments="x:Boolean">
+                  <mca:CSharpReference x:TypeArguments="x:Boolean">isArrayReady</mca:CSharpReference>
+                </OutArgument>
+              </rna:GetServerArrayState.isOperational>
+              <rna:GetServerArrayState.operationalCount>
+                <OutArgument x:TypeArguments="x:Int32">
+                  <mca:CSharpReference x:TypeArguments="x:Int32">numActiveServers</mca:CSharpReference>
+                </OutArgument>
+              </rna:GetServerArrayState.operationalCount>
+              <rna:GetServerArrayState.rsAccountID>
+                <InArgument x:TypeArguments="x:String">
+                  <mca:CSharpValue x:TypeArguments="x:String">rsAccountNo</mca:CSharpValue>
+                </InArgument>
+              </rna:GetServerArrayState.rsAccountID>
+              <rna:GetServerArrayState.rsOAuthToken>
+                <InArgument x:TypeArguments="x:String">
+                  <mca:CSharpValue x:TypeArguments="x:String">rsOauthRefreshToken</mca:CSharpValue>
+                </InArgument>
+              </rna:GetServerArrayState.rsOAuthToken>
+              <rna:GetServerArrayState.rsPassword>
+                <InArgument x:TypeArguments="x:String">
+                  <mca:CSharpValue x:TypeArguments="x:String">rsPassword</mca:CSharpValue>
+                </InArgument>
+              </rna:GetServerArrayState.rsPassword>
+              <rna:GetServerArrayState.rsUserName>
+                <InArgument x:TypeArguments="x:String">
+                  <mca:CSharpValue x:TypeArguments="x:String">rsUsername</mca:CSharpValue>
+                </InArgument>
+              </rna:GetServerArrayState.rsUserName>
+              <rna:GetServerArrayState.serverArrayID>
+                <InArgument x:TypeArguments="x:String">
+                  <mca:CSharpValue x:TypeArguments="x:String">serverArrayID</mca:CSharpValue>
+                </InArgument>
+              </rna:GetServerArrayState.serverArrayID>
+            </rna:GetServerArrayState>
+          </Sequence>
+        </While>
       </Sequence>
       <Sequence DisplayName="Init mirroring on Secondary" sap2010:WorkflowViewState.IdRef="Sequence_7">
         <Sequence.Variables>
           <Variable x:TypeArguments="x:String" Name="initMirroringTaskID" />
         </Sequence.Variables>
-        <WriteLine sap2010:WorkflowViewState.IdRef="WriteLine_33">
-          <InArgument x:TypeArguments="x:String">
-            <mca:CSharpValue x:TypeArguments="x:String" xml:space="preserve">"  Init Mirroring on Secondary - Begin execute RightScript at " + DateTime.Now.ToString()</mca:CSharpValue>
+        <Delay DisplayName="Parallelism Delay" sap2010:WorkflowViewState.IdRef="Delay_16">
+          <InArgument x:TypeArguments="x:TimeSpan">
+            <mca:CSharpValue x:TypeArguments="x:TimeSpan">ParallelismDelay</mca:CSharpValue>
           </InArgument>
-        </WriteLine>
-        <rna:RunRightScript inputs="{x:Null}" DisplayName="Run Init Mirror on Secondary" sap2010:WorkflowViewState.IdRef="RunRightScript_4" ignoreLock="True" scriptOrIDString="438624001">
-          <rna:RunRightScript.rsAccountID>
+        </Delay>
+        <rna:RunScriptOrRecipe inputs="{x:Null}" DisplayName="Run Init Mirror on Secondary" sap2010:WorkflowViewState.IdRef="RunScriptOrRecipe_4" ignoreLock="True" scriptIdOrRecipeName="438624001">
+          <rna:RunScriptOrRecipe.rsAccountID>
             <InArgument x:TypeArguments="x:String">
               <mca:CSharpValue x:TypeArguments="x:String">rsAccountNo</mca:CSharpValue>
             </InArgument>
-          </rna:RunRightScript.rsAccountID>
-          <rna:RunRightScript.rsOAuthToken>
+          </rna:RunScriptOrRecipe.rsAccountID>
+          <rna:RunScriptOrRecipe.rsOAuthToken>
             <InArgument x:TypeArguments="x:String">
               <mca:CSharpValue x:TypeArguments="x:String">rsOauthRefreshToken</mca:CSharpValue>
             </InArgument>
-          </rna:RunRightScript.rsOAuthToken>
-          <rna:RunRightScript.rsPassword>
+          </rna:RunScriptOrRecipe.rsOAuthToken>
+          <rna:RunScriptOrRecipe.rsPassword>
             <InArgument x:TypeArguments="x:String">
               <mca:CSharpValue x:TypeArguments="x:String">rsPassword</mca:CSharpValue>
             </InArgument>
-          </rna:RunRightScript.rsPassword>
-          <rna:RunRightScript.rsUserName>
+          </rna:RunScriptOrRecipe.rsPassword>
+          <rna:RunScriptOrRecipe.rsUserName>
             <InArgument x:TypeArguments="x:String">
               <mca:CSharpValue x:TypeArguments="x:String">rsUsername</mca:CSharpValue>
             </InArgument>
-          </rna:RunRightScript.rsUserName>
-          <rna:RunRightScript.serverID>
+          </rna:RunScriptOrRecipe.rsUserName>
+          <rna:RunScriptOrRecipe.serverID>
             <InArgument x:TypeArguments="x:String">
               <mca:CSharpValue x:TypeArguments="x:String">sqlServerIDs[1]</mca:CSharpValue>
             </InArgument>
-          </rna:RunRightScript.serverID>
-          <rna:RunRightScript.taskID>
+          </rna:RunScriptOrRecipe.serverID>
+          <rna:RunScriptOrRecipe.taskID>
             <OutArgument x:TypeArguments="x:String">
               <mca:CSharpReference x:TypeArguments="x:String">initMirroringTaskID</mca:CSharpReference>
             </OutArgument>
-          </rna:RunRightScript.taskID>
-        </rna:RunRightScript>
-        <WriteLine sap2010:WorkflowViewState.IdRef="WriteLine_34">
-          <InArgument x:TypeArguments="x:String">
-            <mca:CSharpValue x:TypeArguments="x:String" xml:space="preserve">"  Init Mirroring on Secondary - Completed execute RightScript at " + DateTime.Now.ToString()</mca:CSharpValue>
-          </InArgument>
-        </WriteLine>
+          </rna:RunScriptOrRecipe.taskID>
+        </rna:RunScriptOrRecipe>
       </Sequence>
     </Parallel>
-    <WriteLine sap2010:WorkflowViewState.IdRef="WriteLine_35">
-      <InArgument x:TypeArguments="x:String">
-        <mca:CSharpValue x:TypeArguments="x:String">"Completed Parallel Launch Phase 2 at " + DateTime.Now.ToString()</mca:CSharpValue>
-      </InArgument>
-    </WriteLine>
     <Sequence DisplayName="Run Operational Validation" sap2010:WorkflowViewState.IdRef="Sequence_9" />
-    <sads:DebugSymbol.Symbol>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</sads:DebugSymbol.Symbol>
+    <sads:DebugSymbol.Symbol>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</sads:DebugSymbol.Symbol>
   </Sequence>
   <sap2010:WorkflowViewState.ViewStateManager>
     <sap2010:ViewStateManager>
-      <sap2010:ViewStateData Id="WriteLine_4" sap:VirtualizedContainerService.HintSize="1720,62" />
-      <sap2010:ViewStateData Id="CreateDeployment_2" sap:VirtualizedContainerService.HintSize="1720,22" />
-      <sap2010:ViewStateData Id="WriteLine_5" sap:VirtualizedContainerService.HintSize="1720,62" />
+      <sap2010:ViewStateData Id="ImportPublication_1" sap:VirtualizedContainerService.HintSize="200,40" />
+      <sap2010:ViewStateData Id="ImportPublication_2" sap:VirtualizedContainerService.HintSize="200,40" />
+      <sap2010:ViewStateData Id="ImportPublication_3" sap:VirtualizedContainerService.HintSize="200,40" />
+      <sap2010:ViewStateData Id="Parallel_6" sap:VirtualizedContainerService.HintSize="1971,86" />
+      <sap2010:ViewStateData Id="CreateDeployment_2" sap:VirtualizedContainerService.HintSize="1971,22" />
       <sap2010:ViewStateData Id="CreateServer_3" sap:VirtualizedContainerService.HintSize="200,40" />
       <sap2010:ViewStateData Id="CreateServer_4" sap:VirtualizedContainerService.HintSize="200,40" />
       <sap2010:ViewStateData Id="CreateServerArray_2" sap:VirtualizedContainerService.HintSize="200,40" />
-      <sap2010:ViewStateData Id="Parallel_2" sap:VirtualizedContainerService.HintSize="1720,86" />
-      <sap2010:ViewStateData Id="WriteLine_6" sap:VirtualizedContainerService.HintSize="1720,62" />
+      <sap2010:ViewStateData Id="Parallel_2" sap:VirtualizedContainerService.HintSize="1971,86" />
       <sap2010:ViewStateData Id="UpdateInputs_1" sap:VirtualizedContainerService.HintSize="200,40" />
       <sap2010:ViewStateData Id="UpdateInputs_2" sap:VirtualizedContainerService.HintSize="200,40" />
-      <sap2010:ViewStateData Id="Parallel_5" sap:VirtualizedContainerService.HintSize="1720,86" />
-      <sap2010:ViewStateData Id="WriteLine_7" sap:VirtualizedContainerService.HintSize="1720,62" />
-      <sap2010:ViewStateData Id="Delay_12" sap:VirtualizedContainerService.HintSize="211,22" />
-      <sap2010:ViewStateData Id="WriteLine_8" sap:VirtualizedContainerService.HintSize="211,62" />
-      <sap2010:ViewStateData Id="LaunchServer_2" sap:VirtualizedContainerService.HintSize="211,22" />
-      <sap2010:ViewStateData Id="WriteLine_9" sap:VirtualizedContainerService.HintSize="211,62" />
-      <sap2010:ViewStateData Id="Sequence_14" sap:VirtualizedContainerService.HintSize="233,412">
+      <sap2010:ViewStateData Id="Parallel_5" sap:VirtualizedContainerService.HintSize="1971,86" />
+      <sap2010:ViewStateData Id="Delay_12" sap:VirtualizedContainerService.HintSize="200,22" />
+      <sap2010:ViewStateData Id="LaunchServer_2" sap:VirtualizedContainerService.HintSize="200,22" />
+      <sap2010:ViewStateData Id="Sequence_14" sap:VirtualizedContainerService.HintSize="222,208">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
@@ -1151,7 +1222,7 @@
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
       <sap2010:ViewStateData Id="WriteLine_1" sap:VirtualizedContainerService.HintSize="211,62" />
-      <sap2010:ViewStateData Id="Catch`1_1" sap:VirtualizedContainerService.HintSize="404,22">
+      <sap2010:ViewStateData Id="Catch`1_1" sap:VirtualizedContainerService.HintSize="404,21">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">False</x:Boolean>
@@ -1159,29 +1230,26 @@
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="TryCatch_1" sap:VirtualizedContainerService.HintSize="418,644" />
-      <sap2010:ViewStateData Id="Sequence_15" sap:VirtualizedContainerService.HintSize="440,768">
+      <sap2010:ViewStateData Id="TryCatch_1" sap:VirtualizedContainerService.HintSize="418,435" />
+      <sap2010:ViewStateData Id="Sequence_15" sap:VirtualizedContainerService.HintSize="440,559">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="While_1" sap:VirtualizedContainerService.HintSize="480,930" />
-      <sap2010:ViewStateData Id="Delay_3" sap:VirtualizedContainerService.HintSize="480,22" />
-      <sap2010:ViewStateData Id="WriteLine_10" sap:VirtualizedContainerService.HintSize="480,62" />
-      <sap2010:ViewStateData Id="Delay_4" sap:VirtualizedContainerService.HintSize="211,22" />
-      <sap2010:ViewStateData Id="GetServerState_1" sap:VirtualizedContainerService.HintSize="211,22" />
-      <sap2010:ViewStateData Id="WriteLine_11" sap:VirtualizedContainerService.HintSize="211,62" />
-      <sap2010:ViewStateData Id="Sequence_10" sap:VirtualizedContainerService.HintSize="233,310">
+      <sap2010:ViewStateData Id="While_1" sap:VirtualizedContainerService.HintSize="469,719" />
+      <sap2010:ViewStateData Id="Delay_3" sap:VirtualizedContainerService.HintSize="469,22" />
+      <sap2010:ViewStateData Id="Delay_4" sap:VirtualizedContainerService.HintSize="200,22" />
+      <sap2010:ViewStateData Id="GetServerState_1" sap:VirtualizedContainerService.HintSize="200,22" />
+      <sap2010:ViewStateData Id="Sequence_10" sap:VirtualizedContainerService.HintSize="222,208">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="DoWhile_1" sap:VirtualizedContainerService.HintSize="480,476" />
-      <sap2010:ViewStateData Id="WriteLine_12" sap:VirtualizedContainerService.HintSize="480,62" />
+      <sap2010:ViewStateData Id="DoWhile_1" sap:VirtualizedContainerService.HintSize="469,372" />
       <sap2010:ViewStateData Id="Throw_1" sap:VirtualizedContainerService.HintSize="200,22" />
       <sap2010:ViewStateData Id="Sequence_18" sap:VirtualizedContainerService.HintSize="222,146">
         <sap:WorkflowViewStateService.ViewState>
@@ -1190,31 +1258,30 @@
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="WriteLine_13" sap:VirtualizedContainerService.HintSize="211,62" />
-      <sap2010:ViewStateData Id="RunRightScript_1" sap:VirtualizedContainerService.HintSize="211,22" />
-      <sap2010:ViewStateData Id="WriteLine_14" sap:VirtualizedContainerService.HintSize="211,62" />
-      <sap2010:ViewStateData Id="RunRightScript_2" sap:VirtualizedContainerService.HintSize="211,22" />
-      <sap2010:ViewStateData Id="Sequence_8" sap:VirtualizedContainerService.HintSize="233,412">
+      <sap2010:ViewStateData Id="Delay_17" sap:VirtualizedContainerService.HintSize="200,22" />
+      <sap2010:ViewStateData Id="RunScriptOrRecipe_1" sap:VirtualizedContainerService.HintSize="200,22" />
+      <sap2010:ViewStateData Id="Delay_18" sap:VirtualizedContainerService.HintSize="200,22" />
+      <sap2010:ViewStateData Id="RunScriptOrRecipe_2" sap:VirtualizedContainerService.HintSize="200,22" />
+      <sap2010:ViewStateData Id="Delay_19" sap:VirtualizedContainerService.HintSize="200,22" />
+      <sap2010:ViewStateData Id="RunScriptOrRecipe_3" sap:VirtualizedContainerService.HintSize="200,22" />
+      <sap2010:ViewStateData Id="Sequence_8" sap:VirtualizedContainerService.HintSize="222,456">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="If_1" sap:VirtualizedContainerService.HintSize="480,564" />
-      <sap2010:ViewStateData Id="Sequence_3" sap:VirtualizedContainerService.HintSize="502,2440">
+      <sap2010:ViewStateData Id="If_1" sap:VirtualizedContainerService.HintSize="469,606" />
+      <sap2010:ViewStateData Id="Sequence_3" sap:VirtualizedContainerService.HintSize="491,1963">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="WriteLine_15" sap:VirtualizedContainerService.HintSize="486,62" />
-      <sap2010:ViewStateData Id="Delay_6" sap:VirtualizedContainerService.HintSize="211,22" />
-      <sap2010:ViewStateData Id="WriteLine_16" sap:VirtualizedContainerService.HintSize="211,62" />
-      <sap2010:ViewStateData Id="LaunchServer_1" sap:VirtualizedContainerService.HintSize="211,22" />
-      <sap2010:ViewStateData Id="WriteLine_17" sap:VirtualizedContainerService.HintSize="211,62" />
-      <sap2010:ViewStateData Id="Sequence_16" sap:VirtualizedContainerService.HintSize="233,412">
+      <sap2010:ViewStateData Id="Delay_6" sap:VirtualizedContainerService.HintSize="200,22" />
+      <sap2010:ViewStateData Id="LaunchServer_1" sap:VirtualizedContainerService.HintSize="200,22" />
+      <sap2010:ViewStateData Id="Sequence_16" sap:VirtualizedContainerService.HintSize="222,208">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
@@ -1222,7 +1289,7 @@
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
       <sap2010:ViewStateData Id="WriteLine_2" sap:VirtualizedContainerService.HintSize="211,62" />
-      <sap2010:ViewStateData Id="Catch`1_2" sap:VirtualizedContainerService.HintSize="404,22">
+      <sap2010:ViewStateData Id="Catch`1_2" sap:VirtualizedContainerService.HintSize="404,21">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">False</x:Boolean>
@@ -1230,44 +1297,38 @@
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="TryCatch_2" sap:VirtualizedContainerService.HintSize="464,644" />
+      <sap2010:ViewStateData Id="TryCatch_2" sap:VirtualizedContainerService.HintSize="464,435" />
       <sap2010:ViewStateData Id="Delay_13" sap:VirtualizedContainerService.HintSize="464,22" />
-      <sap2010:ViewStateData Id="WriteLine_18" sap:VirtualizedContainerService.HintSize="464,62" />
-      <sap2010:ViewStateData Id="Delay_7" sap:VirtualizedContainerService.HintSize="211,22" />
-      <sap2010:ViewStateData Id="GetServerState_2" sap:VirtualizedContainerService.HintSize="211,22" />
-      <sap2010:ViewStateData Id="WriteLine_19" sap:VirtualizedContainerService.HintSize="211,62" />
-      <sap2010:ViewStateData Id="Sequence_11" sap:VirtualizedContainerService.HintSize="233,310">
+      <sap2010:ViewStateData Id="Delay_7" sap:VirtualizedContainerService.HintSize="200,22" />
+      <sap2010:ViewStateData Id="GetServerState_2" sap:VirtualizedContainerService.HintSize="200,22" />
+      <sap2010:ViewStateData Id="Sequence_11" sap:VirtualizedContainerService.HintSize="222,208">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="DoWhile_2" sap:VirtualizedContainerService.HintSize="464,476" />
-      <sap2010:ViewStateData Id="WriteLine_20" sap:VirtualizedContainerService.HintSize="464,62" />
+      <sap2010:ViewStateData Id="DoWhile_2" sap:VirtualizedContainerService.HintSize="464,372" />
       <sap2010:ViewStateData Id="Throw_2" sap:VirtualizedContainerService.HintSize="200,22" />
-      <sap2010:ViewStateData Id="If_2" sap:VirtualizedContainerService.HintSize="464,212" />
-      <sap2010:ViewStateData Id="Sequence_4" sap:VirtualizedContainerService.HintSize="486,1802">
+      <sap2010:ViewStateData Id="If_2" sap:VirtualizedContainerService.HintSize="464,210" />
+      <sap2010:ViewStateData Id="Sequence_4" sap:VirtualizedContainerService.HintSize="486,1283">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="Sequence_13" sap:VirtualizedContainerService.HintSize="508,2028">
+      <sap2010:ViewStateData Id="Sequence_21" sap:VirtualizedContainerService.HintSize="508,1407">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="ForEach`1_2" sap:VirtualizedContainerService.HintSize="538,2440" />
-      <sap2010:ViewStateData Id="WriteLine_21" sap:VirtualizedContainerService.HintSize="464,62" />
-      <sap2010:ViewStateData Id="Delay_11" sap:VirtualizedContainerService.HintSize="211,22" />
-      <sap2010:ViewStateData Id="WriteLine_22" sap:VirtualizedContainerService.HintSize="211,62" />
-      <sap2010:ViewStateData Id="LaunchServer_3" sap:VirtualizedContainerService.HintSize="211,22" />
-      <sap2010:ViewStateData Id="WriteLine_23" sap:VirtualizedContainerService.HintSize="211,62" />
-      <sap2010:ViewStateData Id="Sequence_17" sap:VirtualizedContainerService.HintSize="233,412">
+      <sap2010:ViewStateData Id="ForEach`1_2" sap:VirtualizedContainerService.HintSize="538,1963" />
+      <sap2010:ViewStateData Id="Delay_11" sap:VirtualizedContainerService.HintSize="200,22" />
+      <sap2010:ViewStateData Id="LaunchServer_3" sap:VirtualizedContainerService.HintSize="200,22" />
+      <sap2010:ViewStateData Id="Sequence_17" sap:VirtualizedContainerService.HintSize="222,208">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
@@ -1275,7 +1336,7 @@
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
       <sap2010:ViewStateData Id="WriteLine_3" sap:VirtualizedContainerService.HintSize="211,62" />
-      <sap2010:ViewStateData Id="Catch`1_3" sap:VirtualizedContainerService.HintSize="404,22">
+      <sap2010:ViewStateData Id="Catch`1_3" sap:VirtualizedContainerService.HintSize="404,21">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">False</x:Boolean>
@@ -1283,73 +1344,81 @@
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="TryCatch_3" sap:VirtualizedContainerService.HintSize="464,644" />
+      <sap2010:ViewStateData Id="TryCatch_3" sap:VirtualizedContainerService.HintSize="464,435" />
       <sap2010:ViewStateData Id="Delay_9" sap:VirtualizedContainerService.HintSize="464,22" />
-      <sap2010:ViewStateData Id="WriteLine_24" sap:VirtualizedContainerService.HintSize="464,62" />
-      <sap2010:ViewStateData Id="Delay_8" sap:VirtualizedContainerService.HintSize="211,22" />
-      <sap2010:ViewStateData Id="GetServerState_3" sap:VirtualizedContainerService.HintSize="211,22" />
-      <sap2010:ViewStateData Id="WriteLine_25" sap:VirtualizedContainerService.HintSize="211,62" />
-      <sap2010:ViewStateData Id="Sequence_12" sap:VirtualizedContainerService.HintSize="233,310">
+      <sap2010:ViewStateData Id="Delay_8" sap:VirtualizedContainerService.HintSize="200,22" />
+      <sap2010:ViewStateData Id="GetServerState_3" sap:VirtualizedContainerService.HintSize="200,22" />
+      <sap2010:ViewStateData Id="Sequence_12" sap:VirtualizedContainerService.HintSize="222,208">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="DoWhile_3" sap:VirtualizedContainerService.HintSize="464,476" />
-      <sap2010:ViewStateData Id="WriteLine_26" sap:VirtualizedContainerService.HintSize="464,62" />
+      <sap2010:ViewStateData Id="DoWhile_3" sap:VirtualizedContainerService.HintSize="464,372" />
       <sap2010:ViewStateData Id="Throw_3" sap:VirtualizedContainerService.HintSize="200,22" />
-      <sap2010:ViewStateData Id="If_3" sap:VirtualizedContainerService.HintSize="464,212" />
-      <sap2010:ViewStateData Id="Sequence_5" sap:VirtualizedContainerService.HintSize="486,2440">
+      <sap2010:ViewStateData Id="If_3" sap:VirtualizedContainerService.HintSize="464,210" />
+      <sap2010:ViewStateData Id="Sequence_5" sap:VirtualizedContainerService.HintSize="486,1963">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="Parallel_3" sap:VirtualizedContainerService.HintSize="1720,2486" />
-      <sap2010:ViewStateData Id="WriteLine_27" sap:VirtualizedContainerService.HintSize="1720,62" />
-      <sap2010:ViewStateData Id="WriteLine_28" sap:VirtualizedContainerService.HintSize="1720,62" />
-      <sap2010:ViewStateData Id="RunRightScript_3" sap:VirtualizedContainerService.HintSize="1720,22" />
-      <sap2010:ViewStateData Id="WriteLine_29" sap:VirtualizedContainerService.HintSize="1720,62" />
-      <sap2010:ViewStateData Id="WriteLine_30" sap:VirtualizedContainerService.HintSize="1720,62" />
-      <sap2010:ViewStateData Id="WriteLine_31" sap:VirtualizedContainerService.HintSize="211,62" />
-      <sap2010:ViewStateData Id="EnableServerArray_1" sap:VirtualizedContainerService.HintSize="211,22" />
-      <sap2010:ViewStateData Id="WriteLine_32" sap:VirtualizedContainerService.HintSize="211,62" />
-      <sap2010:ViewStateData Id="Sequence_6" sap:VirtualizedContainerService.HintSize="233,350">
+      <sap2010:ViewStateData Id="Delay_20" sap:VirtualizedContainerService.HintSize="200,22" />
+      <sap2010:ViewStateData Id="LaunchServerArray_2" sap:VirtualizedContainerService.HintSize="200,22" />
+      <sap2010:ViewStateData Id="Sequence_22" sap:VirtualizedContainerService.HintSize="222,1963">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="WriteLine_33" sap:VirtualizedContainerService.HintSize="211,62" />
-      <sap2010:ViewStateData Id="RunRightScript_4" sap:VirtualizedContainerService.HintSize="211,22" />
-      <sap2010:ViewStateData Id="WriteLine_34" sap:VirtualizedContainerService.HintSize="211,62" />
-      <sap2010:ViewStateData Id="Sequence_7" sap:VirtualizedContainerService.HintSize="233,350">
+      <sap2010:ViewStateData Id="Parallel_3" sap:VirtualizedContainerService.HintSize="1971,2009" />
+      <sap2010:ViewStateData Id="EnableServerArray_1" sap:VirtualizedContainerService.HintSize="464,22" />
+      <sap2010:ViewStateData Id="Delay_21" sap:VirtualizedContainerService.HintSize="464,22" />
+      <sap2010:ViewStateData Id="Delay_14" sap:VirtualizedContainerService.HintSize="200,22" />
+      <sap2010:ViewStateData Id="GetServerArrayState_1" sap:VirtualizedContainerService.HintSize="200,22" />
+      <sap2010:ViewStateData Id="Sequence_19" sap:VirtualizedContainerService.HintSize="222,208">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="Parallel_4" sap:VirtualizedContainerService.HintSize="1720,396" />
-      <sap2010:ViewStateData Id="WriteLine_35" sap:VirtualizedContainerService.HintSize="1720,62" />
-      <sap2010:ViewStateData Id="Sequence_9" sap:VirtualizedContainerService.HintSize="1720,100">
+      <sap2010:ViewStateData Id="While_2" sap:VirtualizedContainerService.HintSize="464,368" />
+      <sap2010:ViewStateData Id="Sequence_6" sap:VirtualizedContainerService.HintSize="486,616">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="Sequence_2" sap:VirtualizedContainerService.HintSize="1742,4480">
+      <sap2010:ViewStateData Id="Delay_16" sap:VirtualizedContainerService.HintSize="200,22" />
+      <sap2010:ViewStateData Id="RunScriptOrRecipe_4" sap:VirtualizedContainerService.HintSize="200,22" />
+      <sap2010:ViewStateData Id="Sequence_7" sap:VirtualizedContainerService.HintSize="222,616">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="RightScale._3Tier.Workflow.Workflow1_1" sap:VirtualizedContainerService.HintSize="1782,4560" />
+      <sap2010:ViewStateData Id="Parallel_4" sap:VirtualizedContainerService.HintSize="1971,662" />
+      <sap2010:ViewStateData Id="Sequence_9" sap:VirtualizedContainerService.HintSize="1971,99">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="Sequence_2" sap:VirtualizedContainerService.HintSize="1993,3414">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="RightScale._3Tier.Workflow.Workflow1_1" sap:VirtualizedContainerService.HintSize="2033,3494" />
     </sap2010:ViewStateManager>
   </sap2010:WorkflowViewState.ViewStateManager>
 </Activity>

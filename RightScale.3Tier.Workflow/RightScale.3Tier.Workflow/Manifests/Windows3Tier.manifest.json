@@ -1,0 +1,410 @@
+﻿{
+  "deploymentLevelInputs": {
+    "$type": "System.Collections.Generic.List`1[[RightScale.netClient.Input, RightScale.netClient, Version=0.2.9.0, Culture=neutral, PublicKeyToken=null]], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
+    "$values": [
+      {
+        "name": "lb/pools",
+        "value": "text:mileagestats",
+        "actions": null,
+        "links": null,
+        "ID": "",
+        "href": null
+      },
+      {
+        "name": "lb/health_check_uri",
+        "value": "text:/",
+        "actions": null,
+        "links": null,
+        "ID": "",
+        "href": null
+      },
+      {
+        "name": "lb/stats_password",
+        "value": "text:P@ssword1",
+        "actions": null,
+        "links": null,
+        "ID": "",
+        "href": null
+      },
+      {
+        "name": "lb/stats_user",
+        "value": "text:statsUser",
+        "actions": null,
+        "links": null,
+        "ID": "",
+        "href": null
+      },
+      {
+        "name": "lb/stats_uri",
+        "value": "text:/haproxy-mileagestats",
+        "actions": null,
+        "links": null,
+        "ID": "",
+        "href": null
+      },
+      {
+        "name": "ADMIN_PASSWORD",
+        "value": "text:P@ssword1",
+        "actions": null,
+        "links": null,
+        "ID": "",
+        "href": null
+      },
+      {
+        "name": "SYS_WINDOWS_TZINFO",
+        "value": "text:GMT Standard Time",
+        "actions": null,
+        "links": null,
+        "ID": "",
+        "href": null
+      },
+      {
+        "name": "BACKUP_METHOD",
+        "value": "text:Remote Storage",
+        "actions": null,
+        "links": null,
+        "ID": "",
+        "href": null
+      },
+      {
+        "name": "DATA_VOLUME_SIZE",
+        "value": "text:10",
+        "actions": null,
+        "links": null,
+        "ID": "",
+        "href": null
+      },
+      {
+        "name": "DB_LINEAGE_NAME",
+        "value": "text:windowsWorkflowFoundation3Tier",
+        "actions": null,
+        "links": null,
+        "ID": "",
+        "href": null
+      },
+      {
+        "name": "LOGS_VOLUME_SIZE",
+        "value": "text:10",
+        "actions": null,
+        "links": null,
+        "ID": "",
+        "href": null
+      },
+      {
+        "name": "DNS_USER",
+        "value": "cred:DME_USER",
+        "actions": null,
+        "links": null,
+        "ID": "",
+        "href": null
+      },
+      {
+        "name": "DNS_PASSWORD",
+        "value": "cred:DME_USER_PASSWORD",
+        "actions": null,
+        "links": null,
+        "ID": "",
+        "href": null
+      },
+      {
+        "name": "DNS_SERVICE",
+        "value": "text:DNS Made Easy",
+        "actions": null,
+        "links": null,
+        "ID": "",
+        "href": null
+      },
+      {
+        "name": "REMOTE_STORAGE_ACCOUNT_ID",
+        "value": "cred:azureStorage_devTest_AccountName",
+        "actions": null,
+        "links": null,
+        "ID": "",
+        "href": null
+      },
+      {
+        "name": "REMOTE_STORAGE_ACCOUNT_PROVIDER",
+        "value": "text:Windows_Azure_Storage",
+        "actions": null,
+        "links": null,
+        "ID": "",
+        "href": null
+      },
+      {
+        "name": "REMOTE_STORAGE_ACCOUNT_SECRET",
+        "value": "cred:azureStorage_devTest_AccountKey",
+        "actions": null,
+        "links": null,
+        "ID": "",
+        "href": null
+      },
+      {
+        "name": "REMOTE_STORAGE_CONTAINER",
+        "value": "text:media",
+        "actions": null,
+        "links": null,
+        "ID": "",
+        "href": null
+      },
+      {
+        "name": "BACKUP_FILE_NAME",
+        "value": "text:mileagestatsdata_sql2012.bak",
+        "actions": null,
+        "links": null,
+        "ID": "",
+        "href": null
+      },
+      {
+        "name": "DB_NAME",
+        "value": "text:MileageStatsData",
+        "actions": null,
+        "links": null,
+        "ID": "",
+        "href": null
+      },
+      {
+        "name": "SERVER_MODE",
+        "value": "text:Standalone",
+        "actions": null,
+        "links": null,
+        "ID": "",
+        "href": null
+      },
+      {
+        "name": "PRINCIPAL_CERTIFICATE",
+        "value": "cred:sqlServerCertificatePrimary",
+        "actions": null,
+        "links": null,
+        "ID": "",
+        "href": null
+      },
+      {
+        "name": "PRINCIPAL_PRIVATE_KEY_PASSWORD",
+        "value": "text:P@ssword1",
+        "actions": null,
+        "links": null,
+        "ID": "",
+        "href": null
+      },
+      {
+        "name": "MIRROR_CERTIFICATE",
+        "value": "cred:sqlServerCertificateSecondary",
+        "actions": null,
+        "links": null,
+        "ID": "",
+        "href": null
+      },
+      {
+        "name": "MIRROR_PRIVATE_KEY_PASSWORD",
+        "value": "text:P@ssword1",
+        "actions": null,
+        "links": null,
+        "ID": "",
+        "href": null
+      },
+      {
+        "name": "WITNESS_CERTIFICATE",
+        "value": "cred:sqlServerCertificateWitness",
+        "actions": null,
+        "links": null,
+        "ID": "",
+        "href": null
+      },
+      {
+        "name": "WITNESS_PRIVATE_KEY_PASSWORD",
+        "value": "text:P@ssword1",
+        "actions": null,
+        "links": null,
+        "ID": "",
+        "href": null
+      },
+      {
+        "name": "MSSQL_PRODUCT_KEY",
+        "value": "cred:mssql_SQLStandardKey",
+        "actions": null,
+        "links": null,
+        "ID": "",
+        "href": null
+      },
+      {
+        "name": "REMOTE_STORAGE_ACCOUNT_ID_APP",
+        "value": "cred:azureStorage_devTest_AccountName",
+        "actions": null,
+        "links": null,
+        "ID": "",
+        "href": null
+      },
+      {
+        "name": "REMOTE_STORAGE_ACCOUNT_SECRET_APP",
+        "value": "cred:azureStorage_devTest_AccountKey",
+        "actions": null,
+        "links": null,
+        "ID": "",
+        "href": null
+      },
+      {
+        "name": "REMOTE_STORAGE_ACCOUNT_PROVIDER_APP",
+        "value": "text:Windows_Azure_Storage",
+        "actions": null,
+        "links": null,
+        "ID": "",
+        "href": null
+      },
+      {
+        "name": "REMOTE_STORAGE_CONTAINER_APP",
+        "value": "text:media",
+        "actions": null,
+        "links": null,
+        "ID": "",
+        "href": null
+      },
+      {
+        "name": "ZIP_FILE_NAME",
+        "value": "text:MileageStatsStable.zip",
+        "actions": null,
+        "links": null,
+        "ID": "",
+        "href": null
+      },
+      {
+        "name": "LB_VHOST_NAME",
+        "value": "text:mileagestats",
+        "actions": null,
+        "links": null,
+        "ID": "",
+        "href": null
+      },
+      {
+        "name": "APPLICATION_LISTENER_PORT",
+        "value": "text:80",
+        "actions": null,
+        "links": null,
+        "ID": "",
+        "href": null
+      },
+      {
+        "name": "MSDEPLOY_SITE_NAME",
+        "value": "text:Default Web Site",
+        "actions": null,
+        "links": null,
+        "ID": "",
+        "href": null
+      },
+      {
+        "name": "WEB_SITE_NAME",
+        "value": "text:Default Web Site",
+        "actions": null,
+        "links": null,
+        "ID": "",
+        "href": null
+      },
+      {
+        "name": "MSDEPLOY_PARAMETERFILECONTENT",
+        "value": "text:<?xml version=\"1.0\" encoding=\"utf-8\"?><parameters><setParameter name=\"IIS Web Application Name\" value=\"Default Web Site\" /><setParameter name=\"MileageStatsDbContext-Web.config Connection String\" value=\"Data Source=winworkflowdb1.cloudlord.com;Failover Partner=winworkflowdb2.cloudlord.com;Database=MileageStatsData;User Id=mileageStatsUser;Password=P@ssword1;\" /></parameters>",
+        "actions": null,
+        "links": null,
+        "ID": "",
+        "href": null
+      },
+      {
+        "name": "MSDEPLOY_PARAMETERFILECONTENTISBASE64",
+        "value": "text:false",
+        "actions": null,
+        "links": null,
+        "ID": "",
+        "href": null
+      }
+    ]
+  },
+  "sql1Inputs": {
+    "$type": "System.Collections.Generic.List`1[[RightScale.netClient.Input, RightScale.netClient, Version=0.2.9.0, Culture=neutral, PublicKeyToken=null]], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
+    "$values": [
+      {
+        "name": "DNS_DOMAIN_NAME",
+        "value": "text:winworkflowdb1.cloudlord.com",
+        "actions": null,
+        "links": null,
+        "ID": "",
+        "href": null
+      },
+      {
+        "name": "DNS_ID",
+        "value": "text:10244681",
+        "actions": null,
+        "links": null,
+        "ID": "",
+        "href": null
+      },
+      {
+        "name": "DB_NEW_LOGIN_NAME",
+        "value": "text:mileageStatsUser",
+        "actions": null,
+        "links": null,
+        "ID": "",
+        "href": null
+      },
+      {
+        "name": "DB_NEW_LOGIN_PASSWORD",
+        "value": "text:P@ssword1",
+        "actions": null,
+        "links": null,
+        "ID": "",
+        "href": null
+      }
+    ]
+  },
+  "sql2Inputs": {
+    "$type": "System.Collections.Generic.List`1[[RightScale.netClient.Input, RightScale.netClient, Version=0.2.9.0, Culture=neutral, PublicKeyToken=null]], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
+    "$values": [
+      {
+        "name": "DNS_DOMAIN_NAME",
+        "value": "text:winworkflowdb2.cloudlord.com",
+        "actions": null,
+        "links": null,
+        "ID": "",
+        "href": null
+      },
+      {
+        "name": "DNS_ID",
+        "value": "text:10244682",
+        "actions": null,
+        "links": null,
+        "ID": "",
+        "href": null
+      }
+    ]
+  },
+  "deploymentName": "Demo Deployment",
+  "loadBalancerPublicationID": "48520",
+  "loadBalancerInstanceTypeID": "7IHJSK47M2K6K",
+  "sqlServerPublicationID": "48469",
+  "sqlServerInstanceTypeID": "1SQ12LL45K2Q0",
+  "iisServerPublicationID": "50317",
+  "serverLoadBalancerCount": "2",
+  "serverSQLServerCount": "2",
+  "serverIISServerMinCount": "1",
+  "serverIISServerMaxCount": "5",
+  "iisElasticityParams": {
+    "$type": "System.Collections.Generic.List`1[[RightScale.netClient.ElasticityParam, RightScale.netClient, Version=0.2.9.0, Culture=neutral, PublicKeyToken=null]], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
+    "$values": [
+      {
+        "alert_specific_params": {
+          "voters_tag_predicate": "voterTagPredicate",
+          "decision_threshold": "81"
+        },
+        "queue_specific_params": null,
+        "bounds": {
+          "max_count": "5",
+          "min_count": "1"
+        },
+        "pacing": {
+          "resize_down_by": "1",
+          "resize_up_by": "1",
+          "resize_calm_time": "25"
+        },
+        "schedule_entries": []
+      }
+    ]
+  },
+  "serverCloudID": "2178"
+}

@@ -37,11 +37,15 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Newtonsoft.Json.5.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\packages\Newtonsoft.Json.5.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="RightScale.netClient, Version=0.2.7.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="RightScale.netClient, Version=0.2.9.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\RightScale.netClient.0.2.7-alpha\lib\net45\RightScale.netClient.dll</HintPath>
+      <HintPath>..\packages\RightScale.netClient.0.3.0-alpha\lib\net45\RightScale.netClient.dll</HintPath>
+    </Reference>
+    <Reference Include="RightScale.netClient.ActivityLibrary, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\RightScale.netClient.ActivityLibrary.0.1.6-alpha\lib\net45\RightScale.netClient.ActivityLibrary.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Activities" />
@@ -66,14 +70,16 @@
     </XamlAppDef>
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
+    <Content Include="Manifests\Windows3Tier.manifest.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\RightScale.netClient.ActivityLibrary\RightScale.netClient.ActivityLibrary.csproj">
-      <Project>{98ec024c-6439-44b1-8b1e-29e457b2201f}</Project>
-      <Name>RightScale.netClient.ActivityLibrary</Name>
-    </ProjectReference>
+    <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
