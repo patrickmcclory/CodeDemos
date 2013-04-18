@@ -374,6 +374,9 @@
       }
     ]
   },
+  "lbDNSDomainName": "azureworkflowdemo.cloudlord.com",
+  "lb1DNSID": "10280937",
+  "lb2DNSID": "10280939",
   "deploymentName": "Demo Deployment",
   "loadBalancerPublicationID": "48520",
   "loadBalancerInstanceTypeID": "7IHJSK47M2K6K",

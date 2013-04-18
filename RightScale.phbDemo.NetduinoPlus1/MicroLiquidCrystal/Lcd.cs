@@ -293,6 +293,15 @@ namespace MicroLiquidCrystal
             SendCommand((byte) (LCD_SETDDRAMADDR | address));
         }
 
+        public void Write(string line1, string line2)
+        {
+            Clear();
+            SetCursorPosition(0, 0);
+            Write(line1);
+            SetCursorPosition(0, 1);
+            Write(line2);
+        }
+
         /// <summary>
         /// Scrolls the contents of the display (text and cursor) one space to the left. 
         /// </summary>
