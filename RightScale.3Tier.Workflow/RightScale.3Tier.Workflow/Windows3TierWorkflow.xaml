@@ -67,6 +67,7 @@
       <AssemblyReference>Microsoft.CSharp</AssemblyReference>
       <AssemblyReference>Newtonsoft.Json</AssemblyReference>
       <AssemblyReference>RightScale.netClient</AssemblyReference>
+      <AssemblyReference>RightScale.netClient.ActivityLibrary</AssemblyReference>
       <AssemblyReference>System</AssemblyReference>
       <AssemblyReference>System.Activities</AssemblyReference>
       <AssemblyReference>System.Core</AssemblyReference>
@@ -78,7 +79,6 @@
       <AssemblyReference>System.Xaml</AssemblyReference>
       <AssemblyReference>System.Xml</AssemblyReference>
       <AssemblyReference>System.Xml.Linq</AssemblyReference>
-      <AssemblyReference>RightScale.netClient.ActivityLibrary</AssemblyReference>
       <AssemblyReference>mscorlib</AssemblyReference>
       <AssemblyReference>RightScale.3Tier.Workflow</AssemblyReference>
     </sco:Collection>
@@ -678,38 +678,6 @@
                   </InArgument>
                 </rna:RunScriptOrRecipe.serverID>
               </rna:RunScriptOrRecipe>
-              <Delay DisplayName="Parallelism Delay" sap2010:WorkflowViewState.IdRef="Delay_19">
-                <InArgument x:TypeArguments="x:TimeSpan">
-                  <mca:CSharpValue x:TypeArguments="x:TimeSpan">ParallelismDelay</mca:CSharpValue>
-                </InArgument>
-              </Delay>
-              <rna:RunScriptOrRecipe inputs="{x:Null}" taskID="{x:Null}" DisplayName="SQL 1 - Init Primary" sap2010:WorkflowViewState.IdRef="RunScriptOrRecipe_3" ignoreLock="True" scriptIdOrRecipeName="438622001">
-                <rna:RunScriptOrRecipe.rsAccountID>
-                  <InArgument x:TypeArguments="x:String">
-                    <mca:CSharpValue x:TypeArguments="x:String">rsAccountNo</mca:CSharpValue>
-                  </InArgument>
-                </rna:RunScriptOrRecipe.rsAccountID>
-                <rna:RunScriptOrRecipe.rsOAuthToken>
-                  <InArgument x:TypeArguments="x:String">
-                    <mca:CSharpValue x:TypeArguments="x:String">rsOauthRefreshToken</mca:CSharpValue>
-                  </InArgument>
-                </rna:RunScriptOrRecipe.rsOAuthToken>
-                <rna:RunScriptOrRecipe.rsPassword>
-                  <InArgument x:TypeArguments="x:String">
-                    <mca:CSharpValue x:TypeArguments="x:String">rsPassword</mca:CSharpValue>
-                  </InArgument>
-                </rna:RunScriptOrRecipe.rsPassword>
-                <rna:RunScriptOrRecipe.rsUserName>
-                  <InArgument x:TypeArguments="x:String">
-                    <mca:CSharpValue x:TypeArguments="x:String">rsUsername</mca:CSharpValue>
-                  </InArgument>
-                </rna:RunScriptOrRecipe.rsUserName>
-                <rna:RunScriptOrRecipe.serverID>
-                  <InArgument x:TypeArguments="x:String">
-                    <mca:CSharpValue x:TypeArguments="x:String">sqlServerIDs[0]</mca:CSharpValue>
-                  </InArgument>
-                </rna:RunScriptOrRecipe.serverID>
-              </rna:RunScriptOrRecipe>
             </Sequence>
           </If.Else>
         </If>
@@ -1066,12 +1034,32 @@
       </Sequence.Variables>
       <Parallel sap2010:WorkflowViewState.IdRef="Parallel_7">
         <Sequence DisplayName="Update LB1 DNS" sap2010:WorkflowViewState.IdRef="Sequence_24">
-          <rna:GetServerCurrentInstanceInfo currentState="{x:Null}" instanceID="{x:Null}" instanceName="{x:Null}" osPlatform="{x:Null}" privateDNSNames="{x:Null}" privateIPAddresses="{x:Null}" publicDNSNames="{x:Null}" rsAccountID="{x:Null}" rsOAuthToken="{x:Null}" rsPassword="{x:Null}" rsUserName="{x:Null}" DisplayName="Get LB 1 Instance Info" sap2010:WorkflowViewState.IdRef="GetServerCurrentInstanceInfo_1">
+          <rna:GetServerCurrentInstanceInfo currentState="{x:Null}" instanceID="{x:Null}" instanceName="{x:Null}" osPlatform="{x:Null}" privateDNSNames="{x:Null}" privateIPAddresses="{x:Null}" publicDNSNames="{x:Null}" DisplayName="Get LB 1 Instance Info" sap2010:WorkflowViewState.IdRef="GetServerCurrentInstanceInfo_1">
             <rna:GetServerCurrentInstanceInfo.publicIPAddresses>
               <OutArgument x:TypeArguments="scg:List(x:String)">
                 <mca:CSharpReference x:TypeArguments="scg:List(x:String)">lb1PublicIPs</mca:CSharpReference>
               </OutArgument>
             </rna:GetServerCurrentInstanceInfo.publicIPAddresses>
+            <rna:GetServerCurrentInstanceInfo.rsAccountID>
+              <InArgument x:TypeArguments="x:String">
+                <mca:CSharpValue x:TypeArguments="x:String">rsAccountNo</mca:CSharpValue>
+              </InArgument>
+            </rna:GetServerCurrentInstanceInfo.rsAccountID>
+            <rna:GetServerCurrentInstanceInfo.rsOAuthToken>
+              <InArgument x:TypeArguments="x:String">
+                <mca:CSharpValue x:TypeArguments="x:String">rsOauthRefreshToken</mca:CSharpValue>
+              </InArgument>
+            </rna:GetServerCurrentInstanceInfo.rsOAuthToken>
+            <rna:GetServerCurrentInstanceInfo.rsPassword>
+              <InArgument x:TypeArguments="x:String">
+                <mca:CSharpValue x:TypeArguments="x:String">rsPassword</mca:CSharpValue>
+              </InArgument>
+            </rna:GetServerCurrentInstanceInfo.rsPassword>
+            <rna:GetServerCurrentInstanceInfo.rsUserName>
+              <InArgument x:TypeArguments="x:String">
+                <mca:CSharpValue x:TypeArguments="x:String">rsUsername</mca:CSharpValue>
+              </InArgument>
+            </rna:GetServerCurrentInstanceInfo.rsUserName>
             <rna:GetServerCurrentInstanceInfo.serverID>
               <InArgument x:TypeArguments="x:String">
                 <mca:CSharpValue x:TypeArguments="x:String">lbServerIDs[0]</mca:CSharpValue>
@@ -1287,16 +1275,48 @@
           </Sequence>
         </While>
       </Sequence>
-      <Sequence DisplayName="Init mirroring on Secondary" sap2010:WorkflowViewState.IdRef="Sequence_7">
+      <Sequence DisplayName="Init mirroring" sap2010:WorkflowViewState.IdRef="Sequence_7">
         <Sequence.Variables>
           <Variable x:TypeArguments="x:String" Name="initMirroringTaskID" />
         </Sequence.Variables>
+        <Delay DisplayName="Parallelism Delay" sap2010:WorkflowViewState.IdRef="Delay_19">
+          <InArgument x:TypeArguments="x:TimeSpan">
+            <mca:CSharpValue x:TypeArguments="x:TimeSpan">ParallelismDelay</mca:CSharpValue>
+          </InArgument>
+        </Delay>
+        <rna:RunScriptOrRecipe inputs="{x:Null}" taskID="{x:Null}" DisplayName="SQL 1 - Init Primary" sap2010:WorkflowViewState.IdRef="RunScriptOrRecipe_3" ignoreLock="True" scriptIdOrRecipeName="438622001">
+          <rna:RunScriptOrRecipe.rsAccountID>
+            <InArgument x:TypeArguments="x:String">
+              <mca:CSharpValue x:TypeArguments="x:String">rsAccountNo</mca:CSharpValue>
+            </InArgument>
+          </rna:RunScriptOrRecipe.rsAccountID>
+          <rna:RunScriptOrRecipe.rsOAuthToken>
+            <InArgument x:TypeArguments="x:String">
+              <mca:CSharpValue x:TypeArguments="x:String">rsOauthRefreshToken</mca:CSharpValue>
+            </InArgument>
+          </rna:RunScriptOrRecipe.rsOAuthToken>
+          <rna:RunScriptOrRecipe.rsPassword>
+            <InArgument x:TypeArguments="x:String">
+              <mca:CSharpValue x:TypeArguments="x:String">rsPassword</mca:CSharpValue>
+            </InArgument>
+          </rna:RunScriptOrRecipe.rsPassword>
+          <rna:RunScriptOrRecipe.rsUserName>
+            <InArgument x:TypeArguments="x:String">
+              <mca:CSharpValue x:TypeArguments="x:String">rsUsername</mca:CSharpValue>
+            </InArgument>
+          </rna:RunScriptOrRecipe.rsUserName>
+          <rna:RunScriptOrRecipe.serverID>
+            <InArgument x:TypeArguments="x:String">
+              <mca:CSharpValue x:TypeArguments="x:String">sqlServerIDs[0]</mca:CSharpValue>
+            </InArgument>
+          </rna:RunScriptOrRecipe.serverID>
+        </rna:RunScriptOrRecipe>
         <Delay DisplayName="Parallelism Delay" sap2010:WorkflowViewState.IdRef="Delay_16">
           <InArgument x:TypeArguments="x:TimeSpan">
             <mca:CSharpValue x:TypeArguments="x:TimeSpan">ParallelismDelay</mca:CSharpValue>
           </InArgument>
         </Delay>
-        <rna:RunScriptOrRecipe inputs="{x:Null}" DisplayName="Run Init Mirror on Secondary" sap2010:WorkflowViewState.IdRef="RunScriptOrRecipe_4" ignoreLock="True" scriptIdOrRecipeName="438624001">
+        <rna:RunScriptOrRecipe inputs="{x:Null}" taskID="{x:Null}" DisplayName="Run Init Mirror on Secondary" sap2010:WorkflowViewState.IdRef="RunScriptOrRecipe_4" ignoreLock="True" scriptIdOrRecipeName="438624001">
           <rna:RunScriptOrRecipe.rsAccountID>
             <InArgument x:TypeArguments="x:String">
               <mca:CSharpValue x:TypeArguments="x:String">rsAccountNo</mca:CSharpValue>
@@ -1322,16 +1342,11 @@
               <mca:CSharpValue x:TypeArguments="x:String">sqlServerIDs[1]</mca:CSharpValue>
             </InArgument>
           </rna:RunScriptOrRecipe.serverID>
-          <rna:RunScriptOrRecipe.taskID>
-            <OutArgument x:TypeArguments="x:String">
-              <mca:CSharpReference x:TypeArguments="x:String">initMirroringTaskID</mca:CSharpReference>
-            </OutArgument>
-          </rna:RunScriptOrRecipe.taskID>
         </rna:RunScriptOrRecipe>
       </Sequence>
     </Parallel>
     <Sequence DisplayName="Run Operational Validation" sap2010:WorkflowViewState.IdRef="Sequence_9" />
-    <sads:DebugSymbol.Symbol>d3hEOlxkZXZccGF0cmlja21jY2xvcnkuZ2l0aHViLmNvbVxDb2RlRGVtb3NcUmlnaHRTY2FsZS4zVGllci5Xb3JrZmxvd1xSaWdodFNjYWxlLjNUaWVyLldvcmtmbG93XFdpbmRvd3MzVGllcldvcmtmbG93LnhhbWzEAgGVAQGxAQECVgO3Cg4CAQFaC1piAgEmXwtfYQIBAmMFxAEQAwGXOsUBBfMBHAMB0jf0AQWMAxADAbUvjQMFzgMQAwGCLM8DBaUIEAMBtQ6mCAWdCRADAbEIngkFtAoQAgFLtQoFtQpnAgFKZAeDAR8DAco9hAEHowEfAwHxO6QBB8MBHwMBmDrXAQvXAVsDAfM54QEL4QFUAwHPOc0BC80BXQMBqznIAQvIAV4DAYc56wEL6wFTAwHjOOYBC+YBXAMBvzjwAQvwAVMDAZs40gEL0gFXAwH3N9wBC9wBaAMB0zf1AQeoAhoDAeg0qQIH3AIaAwH+Md0CB4sDHwMBti+OAwetAxoDAdwtrgMHzQMaAwGDLNADB8wFEgMB/R7NBQfiBhIDAcUX4wYHhAcSAwHqFYUHB6QIEgMBtg6rCAecCRIDAbIInwkHiQoSAwHUAooKB7MKEgIBTGwNbFYDAf8+dg12VQMB2z5xDXFeAwG3PmcNZ2QDAZM+ew17VQMB7z2AAQ2AAWsDAcs9jAENjAFWAwGmPZYBDZYBVQMBgj2RAQ2RAV4DAd48hwENhwFhAwG6PJsBDZsBVQMBljygAQ2gAWwDAfI7rAENrAFWAwHNO7YBDbYBVQMBqTuxAQ2xAV4DAYU7pwENpwFhAwHhOrsBDbsBVQMBvTrAAQ3AAWwDAZk6/QEN/QFXAwGuN4wCDYwCVgMBijeCAg2CAmUDAeY2hwINhwJsAwHCNvgBDfgBWAMBnjaWAg2WAlUDAfo1kQINkQJeAwHWNZsCDZsCVQMBsjWlAg2lAmMDAY41oAINoAJoAwHqNPUB1AL1AfQCAwHpNLECDbECVwMBxDTAAg3AAlYDAaA0tgINtgJiAwH8M7sCDbsCaQMB2DOsAg2sAlgDAbQzygINygJVAwGQM8UCDcUCXgMB7DLPAg3PAlUDAcgy2QIN2QJkAwGkMtQCDdQCaQMBgDKpAtUCqQLmAgMB/zHlAg3lAlcDAdox7wIN7wJWAwG2Md0CuQPdAsADAwG1MeACDeACWAMBkTH5Ag35AlUDAe0w9AIN9AJeAwHJMIMDDYMDYAMBpTD+Ag3+AlUDAYEwiAMNiANkAwHdL+oCDeoCcgMBuS/dAugD3QLyAwMBuC/dAsYD3QLhAwMBty+WAw2WA1YDAZEvqgMNqgNaAwHtLqADDaADVQMByS6bAw2bA14DAaUupQMNpQNVAwGBLpEDDZEDXwMB3S22Aw22A1YDAbgtygMNygNaAwGULcADDcADVQMB8Cy7Aw27A14DAcwsxQMNxQNVAwGoLLEDDbEDXwMBhCzUAw/UA1gDAcwf2QMP2QNUAwGlH94DD94DVAMB/h7iAwmhBBEDAZspogQJpgQRAwHzKKcECdcEEwMBjybYBAnLBQ4DAfMf0QUP0QVUAwHuF9QFONQFQQMB7RfXBQ/XBVQDAcYX2wUJ3wURAwHVHuAFCZgGFAMBlxyZBgmdBhEDAe8bngYJ0wYTAwHlGNQGCeEGDgMBlRjkBgnoBhEDAaAX6QYJgwchAwHrFYYHCYoHEQMBxRWLBwmjCBMDAbcOrAgJ2QgUAwGADNoICZsJFAMBswijCQ+jCVQDAdUCpwkJxgkhAwHSBscJCcsJEQMBrAbMCQmIChEDAfoCjgoJkgoRAwGuApMKCbIKIQIBTeYDC6AEFgMBwynkAw3kA1oDAZwppAQNpARdAwH0KKkEDakEjgEDAcwoqwQL1gQWAwGQJtsED9sEgAEDAfQf3wQN5QQYAwHmJegEDckFGAMBmyDdBQ3dBWMDAdYe4gUNiAYYAwHBHJAGEZQGHQMBmBybBg2bBl0DAfAboAYNoAaRAQMByBuiBgvSBhYDAeYY1wYP1wZ6AwGWGNsGDd8GFQMBvRjmBg3mBmADAaEX7AYP7AZYAwH8FvYGD/YGVwMB2BbxBg/xBmADAbQWgAcPgAdaAwGQFvsGD/sGVwMB7BWIBw2IB2MDAcYVjgcPjgdpAwGhFZUHDaEIGAMBuA6tCAu4CC4DAegNuQgL2AgjAwGBDNsIC/oILgMBmwr7CAuaCSMDAbQIrwkPrwlYAwGMCLkJD7kJVwMB5we0CQ+0CWADAcIHwwkPwwlaAwGdB74JD74JVwMB+AaqCQ+qCWIDAdMGyQkNyQldAwGtBtAJEdAJUAMBogPVCRHVCVYDAfsC3AkLhwoWAwHwA9oJDdoJWgMByQOQCg2QCl0DAa8ClgoPlgpYAwGJAqoKD6oKXAMB5AGgCg+gClcDAb8BmwoPmwpgAwGaAaUKD6UKVwIBdZMKngGTCqQBAgF0rwoPrwpoAgFPkwq6AZMKxQECAU7nAw2fBBgDAcQprAQNsAQVAwGkKLEEDdUEIgMBkSbgBA/kBBcDAecl6QQP7QQXAwG+Je4ED4gFJwMB+COJBQ+NBRcDAdAjjgUPqAUnAwGKIqkFD60FFwMB4iGuBQ/IBScDAZwg4wUP5wUXAwGtHugFD4cGIgMBwhySBhWSBt8BAwGZHKMGDacGFQMBoBuoBg3RBiIDAecY3QYR3QaxAQMBvhiWBw+gCBoDAbkOtQgRtQhdAwGPDrAIEbAIbQMB6Q3BCBHBCFoDAcIN1QgR1QheAwGcDcsIEcsIWQMB9gzGCBHGCGIDAdAM0AgR0AhZAwGqDLkImQG5CJ8BAwGpDLkItQG5CMABAwGoDLwIEbwI9QIDAYIM4wgR4whaAwHaC/cIEfcIXgMBtAvtCBHtCFkDAY4L6AgR6AhiAwHoCvIIEfIIWQMBwgreCBHeCG0DAZwKgwkRgwlaAwH1CZcJEZcJXgMBzwmNCRGNCVkDAakJiAkRiAliAwGDCZIJEZIJWQMB3Qj7CJkB+wifAQMB3Aj7CLUB+wjAAQMB2wj+CBH+CPUCAwG1CN0JDeEJFQMBhAbiCQ2GCicDAfED6QMRjwQcAwHuKZcEFZsEIQMBxSmuBBGuBF4DAaUouQQTuQRcAwH9J80EE80EYAMB1iexBGCxBG0DAdUntAQTtARrAwGuJ9IEE9IEbgMBhyfDBBPDBFsDAeAmvgQTvgRkAwG5JsgEE8gEWwMBkibiBBPiBLMBAwHoJesEE+sEYwMBvyXxBBXxBF4DAZclhQUVhQViAwHwJPsEFfsEXQMByST2BBX2BGYDAaIkgAUVgAVdAwH7I+4EpAHuBKoBAwH6I+4EwAHuBMsBAwH5I4sFE4sFYwMB0SORBRWRBV4DAakjpQUVpQViAwGCI5sFFZsFXQMB2yKWBRWWBWYDAbQioAUVoAVdAwGNIo4FqAGOBa4BAwGMIo4FxAGOBc8BAwGLIqsFE6sFYwMB4yGxBRWxBV4DAbshxQUVxQViAwGUIbsFFbsFXQMB7SC2BRW2BWYDAcYgwAUVwAVdAwGfIK4FrgGuBbQBAwGeIK4FygGuBdUBAwGdIOUFE+UFYwMBrh7rBRXrBV4DAYYe/wUV/wViAwHfHfUFFfUFXQMBuB3wBRXwBWYDAZEdhAYVhAZuAwHqHPoFFfoFXQMBwxylBhGlBl4DAaEbsAYTsAZcAwH5GsQGE8QGYAMB0hrOBhPOBl8DAasaqwYTqwZqAwGEGskGE8kGaAMB3Rm6BhO6BlsDAbYZtQYTtQZkAwGPGb8GE78GWwMB6BiaBxeaB1wDAeEOnwcXnwdfAwG6DqMHEdYHHAMBihPXBxHbBxkDAeIS3AcRkQgbAwHYD5IIEZ8IFgMBiA/fCRHfCWEDAYUG7wkT7wlcAwHdBfkJE/kJWwMBtgX0CRP0CWQDAY8F4gls4glvAwGOBYMKE4MKXgMB5wTlCRPlCWYDAcAE/gkT/glbAwGZBOoJE+oJaAMB8gPqAxPuAxsDAdor7wMTjgQmAwHvKZkEGZkE7AEDAcYppQcVxgcgAwG0E84HGdIHJQMBixPZBxXZB2UDAeMS3gcV3geVAQMBuxLgBxOQCB4DAdkPlQgXlQh/AwGJD5kIFZ0IHQMBsA/sAxfsA2cDAdsr8gMZ8gNiAwGzK4YEGYYEZgMBjCv8Axn8A2EDAeUq9wMZ9wNqAwG+KosEGYsEbAMBlyqBBBmBBGEDAfAppgcXqgcfAwH5FKsHF8UHKgMBtRPQBx3QB5QCAwGME+EHFeUHHQMBkxLmBxWPCCoDAdoPmwgZmwjBAQMBsQ+oBxuoB2sDAfoUrgcdrgdmAwHSFMIHHcIHXwMBqxS4Bx24B2UDAYQUswcdswduAwHdE70HHb0HZQMBthPjBxnjB2YDAZQS7gcb7gdkAwHsEYIIG4IIXQMBxRGMCBuMCGMDAZ4R6Qcb6QdxAwH3EIcIG4cIbQMB0BD4Bxv4B2MDAakQ8wcb8wdsAwGCEP0HG/0HYwMB2w8=</sads:DebugSymbol.Symbol>
+    <sads:DebugSymbol.Symbol>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</sads:DebugSymbol.Symbol>
   </Sequence>
   <sap2010:WorkflowViewState.ViewStateManager>
     <sap2010:ViewStateManager>
@@ -1356,8 +1371,8 @@
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="WriteLine_1" sap:VirtualizedContainerService.HintSize="211,62" />
-      <sap2010:ViewStateData Id="Catch`1_1" sap:VirtualizedContainerService.HintSize="404,22">
+      <sap2010:ViewStateData Id="WriteLine_1" sap:VirtualizedContainerService.HintSize="210,59" />
+      <sap2010:ViewStateData Id="Catch`1_1" sap:VirtualizedContainerService.HintSize="404,20">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">False</x:Boolean>
@@ -1365,15 +1380,15 @@
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="TryCatch_1" sap:VirtualizedContainerService.HintSize="418,440" />
-      <sap2010:ViewStateData Id="Sequence_15" sap:VirtualizedContainerService.HintSize="440,564">
+      <sap2010:ViewStateData Id="TryCatch_1" sap:VirtualizedContainerService.HintSize="418,426" />
+      <sap2010:ViewStateData Id="Sequence_15" sap:VirtualizedContainerService.HintSize="440,550">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="While_1" sap:VirtualizedContainerService.HintSize="469,726" />
+      <sap2010:ViewStateData Id="While_1" sap:VirtualizedContainerService.HintSize="469,703" />
       <sap2010:ViewStateData Id="Delay_3" sap:VirtualizedContainerService.HintSize="469,22" />
       <sap2010:ViewStateData Id="Delay_4" sap:VirtualizedContainerService.HintSize="200,22" />
       <sap2010:ViewStateData Id="GetServerState_1" sap:VirtualizedContainerService.HintSize="200,22" />
@@ -1384,7 +1399,7 @@
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="DoWhile_1" sap:VirtualizedContainerService.HintSize="469,374" />
+      <sap2010:ViewStateData Id="DoWhile_1" sap:VirtualizedContainerService.HintSize="469,365" />
       <sap2010:ViewStateData Id="Throw_1" sap:VirtualizedContainerService.HintSize="200,22" />
       <sap2010:ViewStateData Id="Sequence_18" sap:VirtualizedContainerService.HintSize="222,146">
         <sap:WorkflowViewStateService.ViewState>
@@ -1397,17 +1412,15 @@
       <sap2010:ViewStateData Id="RunScriptOrRecipe_1" sap:VirtualizedContainerService.HintSize="200,22" />
       <sap2010:ViewStateData Id="Delay_18" sap:VirtualizedContainerService.HintSize="200,22" />
       <sap2010:ViewStateData Id="RunScriptOrRecipe_2" sap:VirtualizedContainerService.HintSize="200,22" />
-      <sap2010:ViewStateData Id="Delay_19" sap:VirtualizedContainerService.HintSize="200,22" />
-      <sap2010:ViewStateData Id="RunScriptOrRecipe_3" sap:VirtualizedContainerService.HintSize="200,22" />
-      <sap2010:ViewStateData Id="Sequence_8" sap:VirtualizedContainerService.HintSize="222,456">
+      <sap2010:ViewStateData Id="Sequence_8" sap:VirtualizedContainerService.HintSize="222,332">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="If_1" sap:VirtualizedContainerService.HintSize="469,608" />
-      <sap2010:ViewStateData Id="Sequence_3" sap:VirtualizedContainerService.HintSize="491,1974">
+      <sap2010:ViewStateData Id="If_1" sap:VirtualizedContainerService.HintSize="469,475" />
+      <sap2010:ViewStateData Id="Sequence_3" sap:VirtualizedContainerService.HintSize="491,1809">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
@@ -1424,8 +1437,8 @@
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="WriteLine_3" sap:VirtualizedContainerService.HintSize="211,62" />
-      <sap2010:ViewStateData Id="Catch`1_3" sap:VirtualizedContainerService.HintSize="404,22">
+      <sap2010:ViewStateData Id="WriteLine_3" sap:VirtualizedContainerService.HintSize="210,59" />
+      <sap2010:ViewStateData Id="Catch`1_3" sap:VirtualizedContainerService.HintSize="404,20">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">False</x:Boolean>
@@ -1433,7 +1446,7 @@
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="TryCatch_3" sap:VirtualizedContainerService.HintSize="464,440" />
+      <sap2010:ViewStateData Id="TryCatch_3" sap:VirtualizedContainerService.HintSize="464,426" />
       <sap2010:ViewStateData Id="Delay_9" sap:VirtualizedContainerService.HintSize="464,22" />
       <sap2010:ViewStateData Id="Delay_8" sap:VirtualizedContainerService.HintSize="200,22" />
       <sap2010:ViewStateData Id="GetServerState_3" sap:VirtualizedContainerService.HintSize="200,22" />
@@ -1444,10 +1457,10 @@
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="DoWhile_3" sap:VirtualizedContainerService.HintSize="464,374" />
+      <sap2010:ViewStateData Id="DoWhile_3" sap:VirtualizedContainerService.HintSize="464,365" />
       <sap2010:ViewStateData Id="Throw_3" sap:VirtualizedContainerService.HintSize="200,22" />
-      <sap2010:ViewStateData Id="If_3" sap:VirtualizedContainerService.HintSize="464,212" />
-      <sap2010:ViewStateData Id="Sequence_5" sap:VirtualizedContainerService.HintSize="486,1974">
+      <sap2010:ViewStateData Id="If_3" sap:VirtualizedContainerService.HintSize="464,203" />
+      <sap2010:ViewStateData Id="Sequence_5" sap:VirtualizedContainerService.HintSize="486,1809">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
@@ -1456,7 +1469,7 @@
       </sap2010:ViewStateData>
       <sap2010:ViewStateData Id="Delay_20" sap:VirtualizedContainerService.HintSize="200,22" />
       <sap2010:ViewStateData Id="LaunchServerArray_2" sap:VirtualizedContainerService.HintSize="200,22" />
-      <sap2010:ViewStateData Id="Sequence_22" sap:VirtualizedContainerService.HintSize="222,1974">
+      <sap2010:ViewStateData Id="Sequence_22" sap:VirtualizedContainerService.HintSize="222,1809">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
@@ -1473,8 +1486,8 @@
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="WriteLine_2" sap:VirtualizedContainerService.HintSize="211,62" />
-      <sap2010:ViewStateData Id="Catch`1_2" sap:VirtualizedContainerService.HintSize="404,22">
+      <sap2010:ViewStateData Id="WriteLine_2" sap:VirtualizedContainerService.HintSize="210,59" />
+      <sap2010:ViewStateData Id="Catch`1_2" sap:VirtualizedContainerService.HintSize="404,20">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">False</x:Boolean>
@@ -1482,7 +1495,7 @@
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="TryCatch_2" sap:VirtualizedContainerService.HintSize="464,440" />
+      <sap2010:ViewStateData Id="TryCatch_2" sap:VirtualizedContainerService.HintSize="464,426" />
       <sap2010:ViewStateData Id="Delay_13" sap:VirtualizedContainerService.HintSize="464,22" />
       <sap2010:ViewStateData Id="Delay_7" sap:VirtualizedContainerService.HintSize="200,22" />
       <sap2010:ViewStateData Id="GetServerState_2" sap:VirtualizedContainerService.HintSize="200,22" />
@@ -1493,32 +1506,32 @@
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="DoWhile_2" sap:VirtualizedContainerService.HintSize="464,374" />
+      <sap2010:ViewStateData Id="DoWhile_2" sap:VirtualizedContainerService.HintSize="464,365" />
       <sap2010:ViewStateData Id="Throw_2" sap:VirtualizedContainerService.HintSize="200,22" />
-      <sap2010:ViewStateData Id="If_2" sap:VirtualizedContainerService.HintSize="464,212" />
-      <sap2010:ViewStateData Id="Sequence_4" sap:VirtualizedContainerService.HintSize="486,1292">
+      <sap2010:ViewStateData Id="If_2" sap:VirtualizedContainerService.HintSize="464,203" />
+      <sap2010:ViewStateData Id="Sequence_4" sap:VirtualizedContainerService.HintSize="486,1260">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="Sequence_21" sap:VirtualizedContainerService.HintSize="508,1416">
+      <sap2010:ViewStateData Id="Sequence_21" sap:VirtualizedContainerService.HintSize="508,1384">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="ForEach`1_2" sap:VirtualizedContainerService.HintSize="538,1567" />
-      <sap2010:ViewStateData Id="Sequence_26" sap:VirtualizedContainerService.HintSize="560,1974">
+      <sap2010:ViewStateData Id="ForEach`1_2" sap:VirtualizedContainerService.HintSize="538,1529" />
+      <sap2010:ViewStateData Id="Sequence_26" sap:VirtualizedContainerService.HintSize="560,1809">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="Parallel_3" sap:VirtualizedContainerService.HintSize="1993,2020" />
+      <sap2010:ViewStateData Id="Parallel_3" sap:VirtualizedContainerService.HintSize="1993,1855" />
       <sap2010:ViewStateData Id="GetServerCurrentInstanceInfo_1" sap:VirtualizedContainerService.HintSize="200,22" />
       <sap2010:ViewStateData Id="RunScriptOrRecipe_5" sap:VirtualizedContainerService.HintSize="200,22" />
       <sap2010:ViewStateData Id="Sequence_24" sap:VirtualizedContainerService.HintSize="222,208">
@@ -1538,7 +1551,7 @@
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
       <sap2010:ViewStateData Id="Parallel_7" sap:VirtualizedContainerService.HintSize="598,254" />
-      <sap2010:ViewStateData Id="Sequence_23" sap:VirtualizedContainerService.HintSize="1971,378">
+      <sap2010:ViewStateData Id="Sequence_23" sap:VirtualizedContainerService.HintSize="1993,378">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
@@ -1556,24 +1569,26 @@
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="While_2" sap:VirtualizedContainerService.HintSize="464,368" />
-      <sap2010:ViewStateData Id="Sequence_6" sap:VirtualizedContainerService.HintSize="486,616">
+      <sap2010:ViewStateData Id="While_2" sap:VirtualizedContainerService.HintSize="464,361" />
+      <sap2010:ViewStateData Id="Sequence_6" sap:VirtualizedContainerService.HintSize="486,609">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="Delay_19" sap:VirtualizedContainerService.HintSize="200,22" />
+      <sap2010:ViewStateData Id="RunScriptOrRecipe_3" sap:VirtualizedContainerService.HintSize="200,22" />
       <sap2010:ViewStateData Id="Delay_16" sap:VirtualizedContainerService.HintSize="200,22" />
       <sap2010:ViewStateData Id="RunScriptOrRecipe_4" sap:VirtualizedContainerService.HintSize="200,22" />
-      <sap2010:ViewStateData Id="Sequence_7" sap:VirtualizedContainerService.HintSize="222,616">
+      <sap2010:ViewStateData Id="Sequence_7" sap:VirtualizedContainerService.HintSize="222,609">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="Parallel_4" sap:VirtualizedContainerService.HintSize="1971,662" />
+      <sap2010:ViewStateData Id="Parallel_4" sap:VirtualizedContainerService.HintSize="1993,655" />
       <sap2010:ViewStateData Id="Sequence_9" sap:VirtualizedContainerService.HintSize="1971,100">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
@@ -1581,14 +1596,14 @@
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="Sequence_2" sap:VirtualizedContainerService.HintSize="2015,3844">
+      <sap2010:ViewStateData Id="Sequence_2" sap:VirtualizedContainerService.HintSize="2015,3672">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="RightScale._3Tier.Workflow.Workflow1_1" sap:VirtualizedContainerService.HintSize="2055,3924" />
+      <sap2010:ViewStateData Id="RightScale._3Tier.Workflow.Workflow1_1" sap:VirtualizedContainerService.HintSize="2055,3752" />
     </sap2010:ViewStateManager>
   </sap2010:WorkflowViewState.ViewStateManager>
 </Activity>
