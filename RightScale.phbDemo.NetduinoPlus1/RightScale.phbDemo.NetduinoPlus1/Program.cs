@@ -19,13 +19,15 @@ namespace RightScale.phbDemo.NetduinoPlus1
 
         public static void Main()
         {
-            InitializeNetwork();
-            HC_SR501 motionTrigger = new HC_SR501(SecretLabs.NETMF.Hardware.NetduinoPlus.AnalogChannels.ANALOG_PIN_A0);
-            sensor = new HC_SR04(Pins.GPIO_PIN_D0, Pins.GPIO_PIN_D1);
             var lcdProvider = new GpioLcdTransferProvider(Pins.GPIO_PIN_D2, Pins.GPIO_PIN_D3, Pins.GPIO_PIN_D4, Pins.GPIO_PIN_D5, Pins.GPIO_PIN_D6, Pins.GPIO_PIN_D7);
             var lcd = new Lcd(lcdProvider);
 
             lcd.Begin(16, 2);
+            lcd.Write("PHB Detector", "...now loading");
+
+            InitializeNetwork();
+            HC_SR501 motionTrigger = new HC_SR501(SecretLabs.NETMF.Hardware.NetduinoPlus.AnalogChannels.ANALOG_PIN_A0);
+            sensor = new HC_SR04(Pins.GPIO_PIN_D0, Pins.GPIO_PIN_D1);
 
             try
             {

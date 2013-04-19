@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+  <metadata>
+    <id>RightScale.netClient.ActivityLibrary</id>
+    <version>0.2.1-alpha</version>
+    <title>RightScale Activity Library</title>
+    <authors>Patrick McClory</authors>
+    <owners>Patrick McClory</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>This package contains a number of CodeActivity classes pertaining to RightScale assets.  This library utilizes the RightScale.netClient to make calls to the RightScale API 1.5</description>
+    <summary>Activity Library for Windows Workflow Foundation projects that interact with RightScale assets</summary>
+    <releaseNotes>v0.2.1 - adding fixes to get info activity - some object reference issues in there somewhere.
+
+v0.2.0 - Demo ready version for RightScale:Compute conference</releaseNotes>
+    <dependencies>
+      <group targetFramework=".NETFramework4.5">
+        <dependency id="RightScale.netClient" version="0.3.0-alpha" />
+      </group>
+    </dependencies>
+    <references>
+      <reference file="RightScale.netClient.ActivityLibrary.dll" />
+    </references>
+  </metadata>
+</package>

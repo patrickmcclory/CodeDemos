@@ -45,7 +45,7 @@
     </Reference>
     <Reference Include="RightScale.netClient.ActivityLibrary, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\RightScale.netClient.ActivityLibrary.0.2.0-alpha\lib\net45\RightScale.netClient.ActivityLibrary.dll</HintPath>
+      <HintPath>..\packages\RightScale.netClient.ActivityLibrary.0.2.1-alpha\lib\net45\RightScale.netClient.ActivityLibrary.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Activities" />
