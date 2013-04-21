@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net;
+using System.Collections;
 using System.Net.Sockets;
 using System.Threading;
 using Microsoft.SPOT;
@@ -12,60 +13,101 @@ using MicroLiquidCrystal;
 
 namespace RightScale.phbDemo.NetduinoPlus1
 {
+    public enum phbVector
+    {
+        TowardYou,
+        AwayFromYou, 
+        NotSure
+    }
+
     public class Program
     {
-        static HC_SR04 sensor;
-        
+        static HC_SR04 distanceSensor;
+        static HC_SR501 motionSensor;
+        static GpioLcdTransferProvider lcdProvider;
+        static Lcd lcd;
+        static bool lcdInitialized = false;
+        static int measurementSetSize = 10;
+        static int huntTimeDelay = 250;
+        public static double maxDistance = 240d;
+        public static double minDistance = 12d;
+        public static int measurementTolerance = 24;
+        private static int motionSensorThreshold = 50;
 
         public static void Main()
         {
-            var lcdProvider = new GpioLcdTransferProvider(Pins.GPIO_PIN_D2, Pins.GPIO_PIN_D3, Pins.GPIO_PIN_D4, Pins.GPIO_PIN_D5, Pins.GPIO_PIN_D6, Pins.GPIO_PIN_D7);
-            var lcd = new Lcd(lcdProvider);
-
-            lcd.Begin(16, 2);
-            lcd.Write("PHB Detector", "...now loading");
+            InitializeLCDDisplay();
 
             InitializeNetwork();
-            HC_SR501 motionTrigger = new HC_SR501(SecretLabs.NETMF.Hardware.NetduinoPlus.AnalogChannels.ANALOG_PIN_A0);
-            sensor = new HC_SR04(Pins.GPIO_PIN_D0, Pins.GPIO_PIN_D1);
 
-            try
-            {
-                var currentTime = NtpClient.GetNetworkTime();
-                Microsoft.SPOT.Hardware.Utility.SetLocalTime(currentTime);
-                lcd.Write("NTP Time set:", DateTime.Now.ToString("HH:mm:ss"));
-            }
-            catch (Exception ex)
-            {
-                lcd.Clear();
-                lcd.Write("Couldn't set", "network time");
-                Thread.Sleep(2000);
-            }
+            InitializeTime();
 
-            
+            InitializeMotionSensor();
+
+            WriteLCD("initializing...", "distance sensor");
+            distanceSensor = new HC_SR04(Pins.GPIO_PIN_D0, Pins.GPIO_PIN_D1);
+            WriteLCD("distance sensor", "initialized");
+
+            Thread.Sleep(2000);
+
             while (true)
             {
-                lcd.Clear();
-                lcd.Write("PHB Search", DateTime.Now.ToString("HH:mm:ss"));
-                while(motionTrigger.sense(50) == false)
+                WriteLCD("PHB Search", DateTime.Now.ToString("HH:mm:ss"));
+                while(!MeasureMotion())
                 {
                     Thread.Sleep(500);
-                    lcd.Clear();
-                    lcd.Write("PHB Search" , "safe at: " + DateTime.Now.ToString("HH:mm:ss"));
+                    WriteLCD("PHB Search", "safe at: " + DateTime.Now.ToString("HH:mm:ss"));
                 }
 
-                lcd.Clear();
-                lcd.Write("PHB sited: ", DateTime.Now.ToString("HH:mm:ss"));
+                WriteLCD("PHB sited: ", DateTime.Now.ToString("HH:mm:ss"));
 
-                long ticks = sensor.Ping();
+                switch (MeasureVector())
+                {
+                    case phbVector.TowardYou:
+                        SendMessageToEndpoint("phbalarm");
+                        WriteLCD("Message Sent", "phbalarm!");
+                        Thread.Sleep(5000);
+                        break;
+                    case phbVector.AwayFromYou:
+                        SendMessageToEndpoint("You're off the hook this time");
+                        WriteLCD("Message Sent", "phb leaving area");
+                        Thread.Sleep(5000);
+                        break;
+                    case phbVector.NotSure:
+                        SendMessageToEndpoint("We're really not sure what you should do here...");
+                        WriteLCD("Message Sent", "not sure...");
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+
+        private static bool MeasureMotion()
+        {
+            bool retVal = false;
+            if (motionSensor.sense(motionSensorThreshold))
+            {
+                retVal = true;
+            }
+            return retVal;
+        }
+
+        private static phbVector MeasureVector()
+        {
+            double[] measurements = new double[measurementSetSize];
+
+            for (int i = 0; i < measurementSetSize; i++)
+            {
+                long ticks = distanceSensor.Ping();
                 if (ticks > 0L)
                 {
-                    Thread.Sleep(250);
-                    double inches = sensor.TicksToInches(ticks);
-                    lcd.Clear();
+                    Thread.Sleep(huntTimeDelay);
+                    double inches = distanceSensor.TicksToInches(ticks);
+                    measurements[i] = inches;
 
-                    string printString = Properties.Resources.GetString(Properties.Resources.StringResources.defaultDisplayString) ;
-                    
+                    string printString = Properties.Resources.GetString(Properties.Resources.StringResources.defaultDisplayString);
+
                     if (inches.ToString().Length > 12)
                     {
                         printString = inches.ToString().Substring(0, 12);
@@ -74,19 +116,117 @@ namespace RightScale.phbDemo.NetduinoPlus1
                     {
                         printString = inches.ToString();
                     }
-                    lcd.Clear();
-                    lcd.Write("PHB Approaching", printString);
+
+                    WriteLCD("PHB Approaching", printString);
                 }
             }
-            
+            return AnalyzeVectorData(measurements);
+        }
+        
+        private static phbVector AnalyzeVectorData(double[] measurements)
+        {
+            double currentValue;
+            double previousValue;
+            int dataSetLength = measurements.Length;
+
+            if (dataSetLength > 1)
+            {
+                int score = 0;
+                ArrayList validData = new ArrayList();
+
+                for (int i = 0; i < dataSetLength; i++)
+                {
+                    if (measurements[i] > maxDistance || measurements[i] < minDistance)
+                    {
+                        //not a valid measurement
+                    }
+                    else
+                    {
+                        validData.Add(measurements[i]);
+                    }
+                }
+
+                int arrayListLength = validData.Count;
+                if (arrayListLength > 1)
+                {
+                    double totalDistance = (double)validData[0] - (double)validData[arrayListLength - 1];
+
+                    score += (int)totalDistance;
+
+                    for (int i = 0; i < arrayListLength; i++)
+                    {
+                        if (i > 0)
+                        {
+                            currentValue = (double)validData[i];
+                            previousValue = (double)validData[i - 1];
+                            score += (int)(previousValue - currentValue);
+                        }
+                    }
+
+                    if (score > measurementTolerance)
+                    {
+                        return phbVector.AwayFromYou;
+                    }
+                    else if(score < (-1 * measurementTolerance))
+                    {
+                        return phbVector.TowardYou;
+                    }
+                    else
+                    {
+                        return phbVector.NotSure;;
+                    }
+                }
+                else
+                {
+                    return phbVector.NotSure;
+                }
+            }
+            else
+            {
+                return phbVector.NotSure;
+            }
         }
 
-        public static string ipAddress;
-        public static string netmask;
-        public static string gateway;
+        #region Initialization methods
+
+        private static void InitializeTime()
+        {
+            try
+            {
+                var currentTime = NtpClient.GetNetworkTime();
+                Microsoft.SPOT.Hardware.Utility.SetLocalTime(currentTime);
+                WriteLCD("NTP Time set:", DateTime.Now.ToString("HH:mm:ss"));
+            }
+            catch (Exception)
+            {
+                WriteLCD("Couldn't set", "network time");
+                Thread.Sleep(2000);
+            }
+        }
+
+        private static void InitializeLCDDisplay()
+        {
+            lcdProvider = new GpioLcdTransferProvider(Pins.GPIO_PIN_D2, Pins.GPIO_PIN_D3, Pins.GPIO_PIN_D4, Pins.GPIO_PIN_D5, Pins.GPIO_PIN_D6, Pins.GPIO_PIN_D7);
+            lcd = new Lcd(lcdProvider);
+            lcd.Begin(16, 2);
+            lcdInitialized = true;
+
+            WriteLCD("PHB Detector", "...now loading");
+            Thread.Sleep(5000);//show loading dialog for at least 5 sec..
+        }
+
+        private static void InitializeMotionSensor()
+        {
+            WriteLCD("initializing...", "motion sensor");
+            motionSensor = new HC_SR501(SecretLabs.NETMF.Hardware.NetduinoPlus.AnalogChannels.ANALOG_PIN_A0);
+            WriteLCD("calibrating...", "motion sensor");
+            motionSensor.calibrateSensor();
+            WriteLCD("motion sensor", "calibrated");
+        }
 
         public static void InitializeNetwork()
         {
+            WriteLCD("initializing...", "networking");
             bool networkValid = false;
 
             while (!networkValid)
@@ -112,19 +252,46 @@ namespace RightScale.phbDemo.NetduinoPlus1
                         }
                         else
                         {
-
                             if (!networkInterface.IsDhcpEnabled)
                             {
                                 networkInterface.EnableDhcp();
                             }
-                            Thread.Sleep(20000);
+                            WriteLCD("initializing...", "networking-dhcp");
+                            Thread.Sleep(2000);
                             break;
                         }
                     }
                 }
             }
-
+            WriteLCD("networking", "initialized");
         }
+        #endregion 
 
+        private static void WriteLCD(string line1, string line2)
+        {
+            if (!lcdInitialized)
+            {
+                InitializeLCDDisplay();
+            }
+            lcd.Clear();
+            lcd.Write(line1, line2);
+        }
+        
+        private static bool SendMessageToEndpoint(string message)
+        {
+            bool retVal = false;
+           
+            using (System.Net.WebRequest request = HttpWebRequest.Create(new Uri("http://netduinoendpoint.cloudlord.com:10282/?message=" + Tools.RawUrlEncode(message))))
+            {
+                using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
+                {
+                    if (response.StatusCode == HttpStatusCode.OK)
+                    {
+                        retVal = true;
+                    }
+                }
+            }
+            return retVal;
+        }
     }
 }

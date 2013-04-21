@@ -21,7 +21,7 @@ namespace RightScale.phbDemo.NetduinoPlus1
             this.loopWaitTime = 200;
         }
 
-        private void calibrateSensor()
+        public void calibrateSensor()
         {
             if (!this.isCalibrated)
             {
