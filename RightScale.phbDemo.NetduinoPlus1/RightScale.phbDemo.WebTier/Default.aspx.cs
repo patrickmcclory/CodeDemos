@@ -23,7 +23,7 @@ namespace RightScale.phbDemo.WebTier
             {
                 string connectionString = Environment.GetEnvironmentVariable("phbDemoServiceBus", EnvironmentVariableTarget.Machine);
                 TopicClient client = TopicClient.CreateFromConnectionString(connectionString, "phbalerter");
-                client.Send(new BrokeredMessage(Request.QueryString.Get("message")));
+                client.Send(new BrokeredMessage(HttpUtility.UrlDecode(Request.QueryString.Get("message"))));
                 Response.Write("yep");
                 Response.End();
             }

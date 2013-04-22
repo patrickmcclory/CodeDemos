@@ -377,7 +377,7 @@
   "lbDNSDomainName": "azureworkflowdemo.cloudlord.com",
   "lb1DNSID": "10280937",
   "lb2DNSID": "10280939",
-  "deploymentName": "Demo Deployment",
+  "deploymentName": "Azure Virtual Machine Demo",
   "loadBalancerPublicationID": "48520",
   "loadBalancerInstanceTypeID": "7IHJSK47M2K6K",
   "sqlServerPublicationID": "48469",
