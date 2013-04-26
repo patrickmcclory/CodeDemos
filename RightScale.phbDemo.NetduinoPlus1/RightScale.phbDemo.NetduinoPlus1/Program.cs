@@ -33,9 +33,13 @@ namespace RightScale.phbDemo.NetduinoPlus1
         public static double minDistance = 12d;
         public static int measurementTolerance = 24;
         private static int motionSensorThreshold = 50;
+        private static bool isDebug { get; set; }
 
         public static void Main()
         {
+            //set debug = true;
+            isDebug = true;
+
             InitializeLCDDisplay();
 
             InitializeNetwork();
@@ -61,10 +65,13 @@ namespace RightScale.phbDemo.NetduinoPlus1
 
                 WriteLCD("PHB sited: ", DateTime.Now.ToString("HH:mm:ss"));
 
+                bool alarmed = false;
+
                 switch (MeasureVector())
                 {
                     case phbVector.TowardYou:
                         SendMessageToEndpoint("phbalarm");
+                        alarmed = true;
                         WriteLCD("Message Sent", "phbalarm!");
                         Thread.Sleep(5000);
                         break;
@@ -76,13 +83,22 @@ namespace RightScale.phbDemo.NetduinoPlus1
                     case phbVector.NotSure:
                         SendMessageToEndpoint("We're really not sure what you should do here...");
                         WriteLCD("Message Sent", "not sure...");
+                        Thread.Sleep(5000);
                         break;
                     default:
                         break;
                 }
+
+                if (isDebug && !alarmed)
+                {
+                    WriteLCD("System in", "debug mode");
+                    Thread.Sleep(1000);
+                    SendMessageToEndpoint("phbalarm");
+
+                }
             }
         }
-
+        
         private static bool MeasureMotion()
         {
             bool retVal = false;
@@ -242,12 +258,20 @@ namespace RightScale.phbDemo.NetduinoPlus1
 
                         if (networkInterface.IPAddress != "0.0.0.0")
                         {
-                            System.Net.WebRequest request = HttpWebRequest.Create(new Uri("http://www.google.com"));
-                            HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-                            if (response.StatusCode == HttpStatusCode.OK)
+                            try
                             {
-                                networkValid = true;
-                                break;
+                                System.Net.WebRequest request = HttpWebRequest.Create(new Uri("http://www.google.com"));
+                                HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+                                if (response.StatusCode == HttpStatusCode.OK)
+                                {
+                                    networkValid = true;
+                                    break;
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                lcd.Write("exception", ex.Message.Substring(0, 16));
+                                Thread.Sleep(5000);
                             }
                         }
                         else
@@ -255,6 +279,8 @@ namespace RightScale.phbDemo.NetduinoPlus1
                             if (!networkInterface.IsDhcpEnabled)
                             {
                                 networkInterface.EnableDhcp();
+                                //Thread.Sleep(2000);
+                                //networkInterface.RenewDhcpLease();
                             }
                             WriteLCD("initializing...", "networking-dhcp");
                             Thread.Sleep(2000);

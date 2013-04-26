@@ -1167,7 +1167,7 @@
         </Sequence>
       </Parallel>
     </Sequence>
-    <Parallel DisplayName="Parallel Launch Phase 2 (Server Array and SQL Server 2 init mirroring)" sap2010:WorkflowViewState.IdRef="Parallel_4">
+    <Parallel DisplayName="Parallel Update Phase 2 (Server Array and SQL Server 2 init mirroring)" sap2010:WorkflowViewState.IdRef="Parallel_4">
       <Sequence DisplayName="Enable IIS Array" sap2010:WorkflowViewState.IdRef="Sequence_6">
         <Sequence.Variables>
           <Variable x:TypeArguments="x:Boolean" Name="arrayEnabled">
